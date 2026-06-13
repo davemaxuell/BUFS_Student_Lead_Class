@@ -19,6 +19,11 @@ const CORPUS = [
   { word: "widest", freq: 2 },
 ];
 
+// Real BPE stops at a chosen vocabulary budget — a fixed number of merge rules.
+// Without one, a tiny corpus would merge every word into a single whole token
+// (memorizing the dictionary), which defeats the purpose of SUBWORD pieces.
+const MERGE_BUDGET = 10;
+
 export default function BPETrainer() {
   const { lang } = useLang();
   const t = S.bpetrain;
@@ -31,26 +36,30 @@ export default function BPETrainer() {
     stRef.current = st;
   }, [st]);
 
-  const stepOnce = () => {
+  // Apply one merge, unless we've hit the vocabulary budget. Returns whether
+  // more merges remain.
+  const advance = (): boolean => {
+    if (stRef.current.merges.length >= MERGE_BUDGET) return false;
     const ns = bpeStep(stRef.current);
-    if (!ns) {
+    if (!ns) return false;
+    setSt(ns);
+    return ns.merges.length < MERGE_BUDGET;
+  };
+
+  const stepOnce = () => {
+    if (!advance()) {
       setDone(true);
       setPlaying(false);
-      return;
     }
-    setSt(ns);
   };
 
   useEffect(() => {
     if (!playing) return;
     const id = setInterval(() => {
-      const ns = bpeStep(stRef.current);
-      if (!ns) {
+      if (!advance()) {
         setDone(true);
         setPlaying(false);
-        return;
       }
-      setSt(ns);
     }, 750);
     return () => clearInterval(id);
   }, [playing]);
@@ -106,6 +115,7 @@ export default function BPETrainer() {
 
           <div className="card">
             <div className="label">{t.merges[lang]} — {t.vocab[lang]}: {st.vocab.length}</div>
+            <div className="count-unit" style={{ marginBottom: 6 }}>{t.budget[lang]}: {st.merges.length} / {MERGE_BUDGET}</div>
             <div className="chips" style={{ flexDirection: "column", alignItems: "flex-start", gap: 4 }}>
               {st.merges.length === 0 && <span className="count-unit">—</span>}
               {st.merges.map((m, i) => (
