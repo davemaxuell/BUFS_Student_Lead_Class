@@ -2,6 +2,10 @@
 
 import { LanguageProvider, S, useLang } from "@/lib/i18n";
 import Header from "@/components/Header";
+import NeuralNetBasics from "@/components/NeuralNetBasics";
+import ClassificationTrainer from "@/components/ClassificationTrainer";
+import EmbeddingViz from "@/components/EmbeddingViz";
+import BPETrainer from "@/components/BPETrainer";
 import TokenTaxHero from "@/components/TokenTaxHero";
 import TokenizationComparison from "@/components/TokenizationComparison";
 import RealTokenizers from "@/components/RealTokenizers";
@@ -26,6 +30,10 @@ export default function Page() {
     <LanguageProvider>
       <Header />
       <main>
+        <NeuralNetBasics />
+        <ClassificationTrainer />
+        <EmbeddingViz />
+        <BPETrainer />
         <TokenTaxHero />
         <TokenizationComparison />
         <RealTokenizers />

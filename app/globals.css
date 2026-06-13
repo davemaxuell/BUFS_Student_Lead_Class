@@ -155,4 +155,16 @@ td:first-child, th:first-child { font-weight: 700; }
 ul.clean { list-style: none; padding: 0; margin: 8px 0 0; }
 ul.clean li { padding: 6px 0; border-bottom: 1px solid var(--line); }
 
+/* Embedding map points */
+.emb-pt {
+  font-size: 0.8rem; padding: 5px 9px; border-radius: 999px; cursor: pointer;
+  white-space: nowrap; font-family: inherit; transition: opacity .2s, background .2s, border-color .2s;
+  animation: embIn .5s ease both;
+}
+.emb-pt:hover { border-color: var(--accent) !important; }
+@keyframes embIn { from { opacity: 0; transform: translate(-50%,-50%) scale(0.4); } to { transform: translate(-50%,-50%) scale(1); } }
+
+/* Range sliders */
+input[type="range"] { accent-color: var(--accent); cursor: pointer; }
+
 .footer { padding: 30px 0 60px; color: var(--muted); font-size: 0.85rem; }

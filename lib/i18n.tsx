@@ -17,6 +17,8 @@ export const S = {
     },
   },
   nav: {
+    learn: { en: "How AI learns", ko: "AI 학습" },
+    bpe: { en: "Tokenizer training", ko: "토크나이저 학습" },
     puzzle: { en: "The Puzzle", ko: "퍼즐" },
     tokenize: { en: "Tokenization", ko: "토큰화" },
     normalize: { en: "Normalization", ko: "정규화" },
@@ -24,6 +26,100 @@ export const S = {
     glossary: { en: "Glossary", ko: "용어집" },
   },
   langToggle: { en: "한국어", ko: "English" },
+
+  nnb: {
+    eyebrow: { en: "PART 0 · HOW MACHINES LEARN", ko: "0부 · 기계는 어떻게 학습하나" },
+    title: { en: "What is a neural network?", ko: "신경망이란 무엇인가?" },
+    intro: {
+      en: "A neural network is just a big stack of adjustable knobs (called weights). Numbers go in, the network multiplies them by its knobs and adds them up, and an answer comes out. “Learning” means slowly turning the knobs until the answers are right.",
+      ko: "신경망은 그저 조절 가능한 손잡이(가중치라고 부름)의 거대한 묶음입니다. 숫자가 들어가면 손잡이로 곱하고 더해 답이 나옵니다. ‘학습’이란 답이 맞을 때까지 손잡이를 조금씩 돌리는 과정입니다.",
+    },
+    neuronTitle: { en: "Try one neuron", ko: "뉴런 하나 만져보기" },
+    neuronHelp: {
+      en: "Drag the weights. The neuron multiplies each input by its weight, adds a bias, and squashes the result into an output between 0 and 1.",
+      ko: "가중치를 움직여 보세요. 뉴런은 각 입력에 가중치를 곱하고 편향을 더한 뒤, 결과를 0과 1 사이 출력으로 눌러 줍니다.",
+    },
+    input: { en: "input", ko: "입력" },
+    weight: { en: "weight", ko: "가중치" },
+    bias: { en: "bias", ko: "편향" },
+    sum: { en: "weighted sum", ko: "가중합" },
+    output: { en: "output", ko: "출력" },
+    takeaway: {
+      en: "A real network stacks thousands of these neurons in layers. Training = automatically finding the knob settings that make the outputs correct — which is what you'll watch next.",
+      ko: "실제 신경망은 이런 뉴런 수천 개를 층층이 쌓습니다. 학습이란 출력이 맞도록 손잡이 값을 자동으로 찾는 것 — 바로 다음에서 직접 보게 됩니다.",
+    },
+  },
+
+  train: {
+    eyebrow: { en: "WATCH IT LEARN", ko: "학습 과정 직접 보기" },
+    title: { en: "Training a network to classify", ko: "신경망을 학습시켜 분류하기" },
+    intro: {
+      en: "Below is a real neural network running in your browser, learning to separate two groups of dots. Press Play and watch the colored boundary bend until it sorts them correctly — and the loss (how wrong it is) fall toward zero.",
+      ko: "아래는 브라우저에서 실제로 동작하는 신경망으로, 두 무리의 점을 구분하는 법을 배웁니다. 재생을 눌러 색 경계가 점들을 올바르게 가를 때까지 휘어지고, 손실(얼마나 틀렸는지)이 0으로 떨어지는 것을 보세요.",
+    },
+    play: { en: "▶ Play", ko: "▶ 재생" },
+    pause: { en: "⏸ Pause", ko: "⏸ 일시정지" },
+    step: { en: "Step ×20", ko: "20단계" },
+    reset: { en: "↻ Reset", ko: "↻ 초기화" },
+    dataset: { en: "Dataset", ko: "데이터" },
+    dsBlobs: { en: "Two blobs", ko: "두 무리" },
+    dsCircle: { en: "Circle", ko: "원" },
+    dsXor: { en: "XOR (tricky)", ko: "XOR (어려움)" },
+    epoch: { en: "Epoch", ko: "에폭(반복)" },
+    loss: { en: "Loss", ko: "손실" },
+    acc: { en: "Accuracy", ko: "정확도" },
+    g1: { en: "Group 1", ko: "그룹 1" },
+    g2: { en: "Group 2", ko: "그룹 2" },
+    nStart: { en: "Random start — the boundary is meaningless.", ko: "무작위 시작 — 경계가 아직 의미 없음." },
+    nLearn: { en: "Learning… the boundary is bending toward the data.", ko: "학습 중… 경계가 데이터에 맞춰 휘어집니다." },
+    nAlmost: { en: "Almost there — most dots are on the right side now.", ko: "거의 다 됨 — 대부분의 점이 올바른 쪽에 있습니다." },
+    nDone: { en: "Converged! The network has separated the two groups.", ko: "수렴 완료! 신경망이 두 그룹을 구분했습니다." },
+    xorHint: {
+      en: "Tip: switch to XOR — a straight line can never separate it, so the network must learn a curved boundary. That curve is what the hidden layer buys you.",
+      ko: "팁: XOR로 바꿔 보세요 — 직선으로는 절대 못 나눕니다. 그래서 신경망은 곡선 경계를 배워야 합니다. 그 곡선이 바로 은닉층이 주는 능력입니다.",
+    },
+  },
+
+  emb: {
+    eyebrow: { en: "FROM PICTURES TO WORDS", ko: "그림에서 언어로" },
+    title: { en: "Turning words into numbers (embeddings)", ko: "단어를 숫자로 (임베딩)" },
+    intro: {
+      en: "Networks only understand numbers, so each word becomes a list of numbers — a vector. Through training, the network learns to place words with similar meaning near each other. Click a word to see its nearest neighbors.",
+      ko: "신경망은 숫자만 이해하므로, 각 단어는 숫자 목록 — 벡터가 됩니다. 학습을 통해 신경망은 의미가 비슷한 단어를 서로 가까이 놓는 법을 배웁니다. 단어를 클릭해 가장 가까운 이웃을 보세요.",
+    },
+    neighbors: { en: "Closest in meaning", ko: "의미가 가장 가까운 단어" },
+    note: {
+      en: "This is a simplified 2-D map; real embeddings have hundreds of dimensions. Notice meanings cluster — and across languages too.",
+      ko: "이것은 단순화한 2차원 지도입니다; 실제 임베딩은 수백 차원입니다. 의미끼리 뭉치는 것을 보세요 — 언어를 넘어서도요.",
+    },
+  },
+
+  bpetrain: {
+    eyebrow: { en: "HOW A TOKENIZER LEARNS", ko: "토크나이저는 어떻게 학습하나" },
+    title: { en: "Training a tokenizer (BPE)", ko: "토크나이저 학습하기 (BPE)" },
+    intro: {
+      en: "A subword tokenizer is also trained — but differently from the network above. It starts from single characters, then repeatedly glues together the most frequent neighboring pair. Press Step (or Play) to watch it build a vocabulary of reusable pieces from this little corpus.",
+      ko: "서브워드 토크나이저도 학습됩니다 — 다만 위 신경망과는 다른 방식입니다. 글자 하나하나에서 시작해, 가장 자주 붙어 나오는 이웃 쌍을 반복해서 합칩니다. 단계(또는 재생)를 눌러 작은 말뭉치에서 재사용 가능한 조각들의 어휘집이 만들어지는 과정을 보세요.",
+    },
+    play: { en: "▶ Play", ko: "▶ 재생" },
+    pause: { en: "⏸ Pause", ko: "⏸ 일시정지" },
+    step: { en: "Merge once", ko: "한 번 병합" },
+    reset: { en: "↻ Reset", ko: "↻ 초기화" },
+    corpus: { en: "Training corpus (word × frequency)", ko: "학습 말뭉치 (단어 × 빈도)" },
+    merges: { en: "Merges learned (in order)", ko: "학습한 병합 규칙 (순서대로)" },
+    vocab: { en: "Vocabulary size", ko: "어휘집 크기" },
+    mergePre: { en: "Merge", ko: "병합" },
+    appeared: { en: "appeared", ko: "등장" },
+    times: { en: "×", ko: "회" },
+    done: { en: "No frequent pairs left — training stops. The tokenizer is ready.", ko: "자주 나오는 쌍이 더 없음 — 학습 종료. 토크나이저 준비 완료." },
+    start: { en: "Every word starts as individual characters. Press Step.", ko: "모든 단어는 글자 하나하나로 시작합니다. 단계를 누르세요." },
+    tryLabel: { en: "Now tokenize a NEW word with what it learned:", ko: "이제 학습한 규칙으로 새 단어를 토큰화해 보세요:" },
+    pieces: { en: "pieces", ko: "조각" },
+    tryHint: {
+      en: "Try “slowest” — built cleanly from learned pieces. Then type a Korean word: it was never in training, so it falls back to tiny character pieces. That is exactly why low-resource languages pay the token tax.",
+      ko: "“slowest”를 보세요 — 학습한 조각들로 깔끔하게 만들어집니다. 이제 한국어 단어를 입력해 보세요: 학습에 없었기 때문에 작은 글자 조각으로 떨어집니다. 저자원 언어가 토큰세를 내는 이유가 바로 이것입니다.",
+    },
+  },
 
   hero: {
     eyebrow: { en: "START HERE · THE PUZZLE", ko: "여기서 시작 · 퍼즐" },

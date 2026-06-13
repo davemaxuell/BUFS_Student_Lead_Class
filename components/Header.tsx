@@ -11,6 +11,8 @@ export default function Header() {
           🧩 {S.meta.title[lang]} <span>· {lang === "en" ? "EN" : "KR"}</span>
         </div>
         <nav className="nav">
+          <a href="#nnb">{S.nav.learn[lang]}</a>
+          <a href="#bpe">{S.nav.bpe[lang]}</a>
           <a href="#puzzle">{S.nav.puzzle[lang]}</a>
           <a href="#tokenize">{S.nav.tokenize[lang]}</a>
           <a href="#normalize">{S.nav.normalize[lang]}</a>

@@ -1,0 +1,112 @@
+// A genuinely real, tiny neural network (2 → H tanh → 1 sigmoid) trained with
+// real gradient descent / backprop. No fakery — the decision boundary you see
+// is this model's live predictions. Runs fine in the browser.
+
+export type Point = { x: number; y: number; label: number };
+export type DatasetKind = "blobs" | "circle" | "xor";
+
+function randn(): number {
+  // Box–Muller
+  let u = 0;
+  let v = 0;
+  while (u === 0) u = Math.random();
+  while (v === 0) v = Math.random();
+  return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+}
+
+export function makeDataset(kind: DatasetKind, n = 160): Point[] {
+  const pts: Point[] = [];
+  for (let i = 0; i < n; i++) {
+    if (kind === "blobs") {
+      const label = i % 2;
+      const cx = label ? 0.5 : -0.5;
+      const cy = label ? 0.5 : -0.5;
+      pts.push({ x: cx + randn() * 0.18, y: cy + randn() * 0.18, label });
+    } else if (kind === "circle") {
+      const x = Math.random() * 2 - 1;
+      const y = Math.random() * 2 - 1;
+      pts.push({ x, y, label: x * x + y * y < 0.4 ? 1 : 0 });
+    } else {
+      // xor — not linearly separable; needs the hidden layer
+      const x = Math.random() * 2 - 1;
+      const y = Math.random() * 2 - 1;
+      pts.push({ x, y, label: x > 0 !== y > 0 ? 1 : 0 });
+    }
+  }
+  return pts;
+}
+
+export class MLP {
+  H: number;
+  W1: number[][] = [];
+  b1: number[] = [];
+  W2: number[] = [];
+  b2 = 0;
+
+  constructor(H = 10) {
+    this.H = H;
+    this.reset();
+  }
+
+  reset() {
+    this.W1 = Array.from({ length: this.H }, () => [randn() * 0.9, randn() * 0.9]);
+    this.b1 = Array.from({ length: this.H }, () => 0);
+    this.W2 = Array.from({ length: this.H }, () => randn() * 0.9);
+    this.b2 = 0;
+  }
+
+  forward(x0: number, x1: number): { a1: number[]; y: number } {
+    const a1 = new Array<number>(this.H);
+    for (let j = 0; j < this.H; j++) {
+      a1[j] = Math.tanh(this.W1[j][0] * x0 + this.W1[j][1] * x1 + this.b1[j]);
+    }
+    let z2 = this.b2;
+    for (let j = 0; j < this.H; j++) z2 += this.W2[j] * a1[j];
+    return { a1, y: 1 / (1 + Math.exp(-z2)) };
+  }
+
+  predict(x0: number, x1: number): number {
+    return this.forward(x0, x1).y;
+  }
+
+  /** One full-batch gradient-descent epoch. Returns the binary cross-entropy loss. */
+  trainEpoch(data: Point[], lr = 0.6): number {
+    const H = this.H;
+    const gW1 = Array.from({ length: H }, () => [0, 0]);
+    const gb1 = new Array<number>(H).fill(0);
+    const gW2 = new Array<number>(H).fill(0);
+    let gb2 = 0;
+    let loss = 0;
+
+    for (const p of data) {
+      const { a1, y } = this.forward(p.x, p.y);
+      const t = p.label;
+      loss += -(t * Math.log(y + 1e-9) + (1 - t) * Math.log(1 - y + 1e-9));
+      const dz2 = y - t; // dL/dz2 for sigmoid + BCE
+      gb2 += dz2;
+      for (let j = 0; j < H; j++) {
+        gW2[j] += dz2 * a1[j];
+        const dz1 = dz2 * this.W2[j] * (1 - a1[j] * a1[j]); // tanh'
+        gW1[j][0] += dz1 * p.x;
+        gW1[j][1] += dz1 * p.y;
+        gb1[j] += dz1;
+      }
+    }
+
+    const s = lr / data.length;
+    for (let j = 0; j < H; j++) {
+      this.W2[j] -= s * gW2[j];
+      this.W1[j][0] -= s * gW1[j][0];
+      this.W1[j][1] -= s * gW1[j][1];
+      this.b1[j] -= s * gb1[j];
+    }
+    this.b2 -= s * gb2;
+    return loss / data.length;
+  }
+
+  accuracy(data: Point[]): number {
+    let c = 0;
+    for (const p of data) if ((this.predict(p.x, p.y) > 0.5 ? 1 : 0) === p.label) c++;
+    return c / data.length;
+  }
+}

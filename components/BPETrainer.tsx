@@ -1,0 +1,136 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import { S, useLang } from "@/lib/i18n";
+import { initBPE, bpeStep, applyMerges, BPEState } from "@/lib/bpe";
+import { chipStyle } from "@/lib/chip";
+
+const CORPUS = [
+  { word: "low", freq: 7 },
+  { word: "lower", freq: 5 },
+  { word: "lowest", freq: 3 },
+  { word: "slow", freq: 4 },
+  { word: "slower", freq: 3 },
+  { word: "new", freq: 6 },
+  { word: "newer", freq: 6 },
+  { word: "newest", freq: 4 },
+  { word: "wide", freq: 3 },
+  { word: "wider", freq: 3 },
+  { word: "widest", freq: 2 },
+];
+
+export default function BPETrainer() {
+  const { lang } = useLang();
+  const t = S.bpetrain;
+  const [st, setSt] = useState<BPEState>(() => initBPE(CORPUS));
+  const [playing, setPlaying] = useState(false);
+  const [done, setDone] = useState(false);
+  const [testWord, setTestWord] = useState("slowest");
+  const stRef = useRef(st);
+  useEffect(() => {
+    stRef.current = st;
+  }, [st]);
+
+  const stepOnce = () => {
+    const ns = bpeStep(stRef.current);
+    if (!ns) {
+      setDone(true);
+      setPlaying(false);
+      return;
+    }
+    setSt(ns);
+  };
+
+  useEffect(() => {
+    if (!playing) return;
+    const id = setInterval(() => {
+      const ns = bpeStep(stRef.current);
+      if (!ns) {
+        setDone(true);
+        setPlaying(false);
+        return;
+      }
+      setSt(ns);
+    }, 750);
+    return () => clearInterval(id);
+  }, [playing]);
+
+  const reset = () => {
+    setPlaying(false);
+    setDone(false);
+    setSt(initBPE(CORPUS));
+  };
+
+  const last = st.merges[st.merges.length - 1];
+  const narration = done
+    ? t.done[lang]
+    : !last
+    ? t.start[lang]
+    : lang === "ko"
+    ? `${t.mergePre[lang]} ${st.merges.length}: “${last.a}” + “${last.b}” → “${last.token}” (${last.count}회 등장)`
+    : `${t.mergePre[lang]} ${st.merges.length}: “${last.a}” + “${last.b}” → “${last.token}” (appeared ${last.count}×)`;
+
+  const testPieces = applyMerges(testWord, st.merges);
+
+  return (
+    <section id="bpe">
+      <div className="container">
+        <div className="eyebrow">{t.eyebrow[lang]}</div>
+        <h2>{t.title[lang]}</h2>
+        <p className="lead">{t.intro[lang]}</p>
+
+        <div className="btnrow" style={{ marginTop: 14 }}>
+          <button className="lang-btn" onClick={() => setPlaying((p) => !p)} disabled={done}>
+            {playing ? t.pause[lang] : t.play[lang]}
+          </button>
+          <button className="preset" onClick={stepOnce} disabled={done}>{t.step[lang]}</button>
+          <button className="preset" onClick={reset}>{t.reset[lang]}</button>
+        </div>
+
+        <div className="callout" style={{ marginTop: 12 }}>{narration}</div>
+
+        <div className="grid2" style={{ marginTop: 14, alignItems: "start" }}>
+          <div className="card">
+            <div className="label">{t.corpus[lang]}</div>
+            {st.words.map((w, wi) => (
+              <div key={wi} style={{ display: "flex", alignItems: "center", gap: 8, margin: "6px 0" }}>
+                <span className="count-unit" style={{ width: 28, textAlign: "right" }}>×{w.freq}</span>
+                <div className="chips" style={{ margin: 0 }}>
+                  {w.symbols.map((s, si) => (
+                    <span className="chip" key={si} style={chipStyle(si)}>{s}</span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="card">
+            <div className="label">{t.merges[lang]} — {t.vocab[lang]}: {st.vocab.length}</div>
+            <div className="chips" style={{ flexDirection: "column", alignItems: "flex-start", gap: 4 }}>
+              {st.merges.length === 0 && <span className="count-unit">—</span>}
+              {st.merges.map((m, i) => (
+                <span key={i} style={{ fontFamily: "ui-monospace, monospace", fontSize: ".85rem" }}>
+                  <span className="count-unit">{i + 1}.</span> {m.a} + {m.b} → <b style={{ color: "var(--accent2)" }}>{m.token}</b>{" "}
+                  <span className="count-unit">({m.count})</span>
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Test on a new word */}
+        <div className="card" style={{ marginTop: 14 }}>
+          <label className="label">{t.tryLabel[lang]}</label>
+          <input type="text" value={testWord} onChange={(e) => setTestWord(e.target.value)} />
+          <div className="chips" style={{ marginTop: 10 }}>
+            {testPieces.map((p, i) => (
+              <span className="chip" key={i} style={chipStyle(i)}>{p}</span>
+            ))}
+          </div>
+          <div className="count-unit" style={{ marginTop: 6 }}>{testPieces.length} {t.pieces[lang]}</div>
+          <div className="callout" style={{ borderLeftColor: "var(--warn)", marginTop: 10 }}>{t.tryHint[lang]}</div>
+        </div>
+      </div>
+    </section>
+  );
+}
