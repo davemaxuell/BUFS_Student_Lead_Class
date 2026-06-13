@@ -7,6 +7,7 @@ import ClassificationTrainer from "@/components/ClassificationTrainer";
 import BackpropSequence from "@/components/BackpropSequence";
 import MLMDemo from "@/components/MLMDemo";
 import EmbeddingViz from "@/components/EmbeddingViz";
+import Embed3D from "@/components/Embed3D";
 import BPETrainer from "@/components/BPETrainer";
 import TokenTaxHero from "@/components/TokenTaxHero";
 import TokenizationComparison from "@/components/TokenizationComparison";
@@ -37,6 +38,7 @@ export default function Page() {
         <BackpropSequence />
         <MLMDemo />
         <EmbeddingViz />
+        <Embed3D />
         <BPETrainer />
         <TokenTaxHero />
         <TokenizationComparison />

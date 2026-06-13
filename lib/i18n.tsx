@@ -162,6 +162,23 @@ export const S = {
     },
   },
 
+  emb3d: {
+    title: { en: "Now in 3D — add your own words", ko: "이제 3D로 — 직접 단어를 추가하기" },
+    intro: {
+      en: "Same idea, but live and in 3D with a REAL model. It turns each word into a 384-number vector; we project that to 3D so you can see it. Drag to rotate, use +/− to zoom, click a word for its closest relatives. Add any word — even Korean — and watch where it lands.",
+      ko: "같은 개념을 실제 모델로 실시간 3D에서. 모델이 각 단어를 384개 숫자의 벡터로 바꾸고, 이를 3D로 투영해 보여줍니다. 드래그로 회전, +/−로 확대/축소, 단어 클릭 시 가장 가까운 단어 표시. 아무 단어나(한국어도) 추가해 어디에 놓이는지 보세요.",
+    },
+    loadBtn: { en: "▶ Load the 3D word-vector explorer (downloads model once)", ko: "▶ 3D 단어 벡터 탐색기 불러오기 (모델 최초 1회 다운로드)" },
+    loading: { en: "Loading model & embedding words…", ko: "모델 불러오고 단어 임베딩 중…" },
+    error: { en: "Couldn't load (needs internet). The 2-D map above still works.", ko: "불러오기 실패(인터넷 필요). 위 2D 지도는 정상 동작합니다." },
+    retry: { en: "Retry", ko: "다시 시도" },
+    addPlaceholder: { en: "Add a word (any language)…", ko: "단어 추가 (아무 언어)…" },
+    addBtn: { en: "+ Add", ko: "+ 추가" },
+    neighbors: { en: "Closest by real cosine similarity", ko: "실제 코사인 유사도로 가장 가까운 단어" },
+    dragHint: { en: "Drag to rotate · +/− to zoom · click a word", ko: "드래그=회전 · +/−=확대 · 단어 클릭" },
+    busy: { en: "embedding…", ko: "임베딩 중…" },
+  },
+
   bpetrain: {
     eyebrow: { en: "HOW A TOKENIZER LEARNS", ko: "토크나이저는 어떻게 학습하나" },
     title: { en: "Training a tokenizer (BPE)", ko: "토크나이저 학습하기 (BPE)" },
