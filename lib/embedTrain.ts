@@ -104,9 +104,10 @@ export class EmbModel {
   }
 
   // Deterministic seeded init so server and client render the same first frame.
+  // Wide spread (±1) so the random starting cloud fills the plot, not a center clump.
   reset(seed: number) {
     const rnd = mulberry32(seed);
-    this.vec = this.words.map(() => [(rnd() - 0.5) * 0.6, (rnd() - 0.5) * 0.6]);
+    this.vec = this.words.map(() => [(rnd() - 0.5) * 2.0, (rnd() - 0.5) * 2.0]);
   }
 
   // The model's PREDICTION that two tokens are related: high when they're close.

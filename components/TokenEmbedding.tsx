@@ -25,7 +25,7 @@ export default function TokenEmbedding() {
   const seedRef = useRef(2);
   const pairIdxRef = useRef(0);
   const dispRef = useRef<number[][]>(model.vec.map((r) => [...r])); // smoothed display positions
-  const scaleRef = useRef(0.6);
+  const scaleRef = useRef(0); // 0 → first render fits the (wide) random spread exactly
 
   const runEpochs = (n: number) => {
     setFocus(null);
@@ -89,7 +89,7 @@ export default function TokenEmbedding() {
     seedRef.current += 1;
     model.reset(seedRef.current);
     dispRef.current = model.vec.map((r) => [...r]);
-    scaleRef.current = 0.6;
+    scaleRef.current = 0; // refit to the new random spread
     setCoords(dispRef.current.map((r) => [...r]));
     setEpoch(0);
     setDist(0);
@@ -100,7 +100,7 @@ export default function TokenEmbedding() {
     let target = 0.001;
     for (const c of coords) target = Math.max(target, Math.abs(c[0]), Math.abs(c[1]));
     scaleRef.current = Math.max(scaleRef.current, target * 1.06);
-    const s = scaleRef.current;
+    const s = scaleRef.current || 1;
     return coords.map((c, i) => ({
       i,
       sx: W / 2 + (c[0] / s) * (W / 2 - 40),

@@ -195,8 +195,8 @@ export default function Embed3D() {
         )}
 
         {status === "ready" && (
-          <>
-            <div className="card" style={{ marginTop: 14 }}>
+          <div className="grid2" style={{ marginTop: 14, alignItems: "start" }}>
+            <div className="card">
               <div className="btnrow" style={{ marginTop: 0, marginBottom: 8 }}>
                 <input
                   type="text"
@@ -283,9 +283,10 @@ export default function Embed3D() {
               <div className="note">{t.dragHint[lang]}</div>
             </div>
 
+            <div>
             {sel === null
               ? rels.length > 1 && (
-                  <div className="card" style={{ marginTop: 14 }}>
+                  <div className="card" style={{ marginTop: 0 }}>
                     <div className="label" style={{ color: "#ffd479" }}>{t.relTitle[lang]}</div>
                     {rels.map((r) => (
                       <div className="bar-row" key={r.a} style={{ gridTemplateColumns: "150px 1fr 56px" }}>
@@ -300,7 +301,7 @@ export default function Embed3D() {
                   </div>
                 )
               : (
-                  <div className="card" style={{ marginTop: 14 }}>
+                  <div className="card" style={{ marginTop: 0 }}>
                     <div className="label">{t.relSelTitle[lang].replace("{w}", words[sel])}</div>
                     {selSims.map((o) => (
                       <div className="bar-row" key={o.i} style={{ gridTemplateColumns: "150px 1fr 56px" }}>
@@ -352,7 +353,8 @@ export default function Embed3D() {
                 <div className="note">{t.anaNote[lang]}</div>
               </div>
             )}
-          </>
+            </div>
+          </div>
         )}
       </div>
     </section>
