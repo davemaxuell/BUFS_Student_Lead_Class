@@ -93,7 +93,7 @@ export default function ClassificationTrainer() {
     let stop = false;
     const tick = () => {
       if (stop) return;
-      runEpochs(2);
+      runEpochs(1);
       rafRef.current = requestAnimationFrame(tick);
     };
     rafRef.current = requestAnimationFrame(tick);
