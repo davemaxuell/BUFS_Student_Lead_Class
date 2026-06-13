@@ -3,7 +3,12 @@
 // heavy library never enters the initial bundle and the rest of the app stays
 // instant and offline-capable.
 
-export type RealTok = { name: string; marker: "##" | "▁" | "Ġ"; tokenize: (t: string) => string[] };
+export type RealTok = {
+  name: string;
+  marker: "##" | "▁" | "Ġ";
+  special: { start: string; end: string } | null;
+  tokenize: (t: string) => string[];
+};
 
 let cache: RealTok[] | null = null;
 let loading: Promise<RealTok[]> | null = null;
@@ -26,9 +31,23 @@ export function loadRealTokenizers(): Promise<RealTok[]> {
     const toks = await Promise.all(
       specs.map(async (s) => {
         const t = await AutoTokenizer.from_pretrained(s.id);
+        // Derive the start/end special tokens this model adds (e.g. [CLS] … [SEP])
+        // by comparing a full encode (which adds them) against the raw token list.
+        let special: { start: string; end: string } | null = null;
+        try {
+          const probe = "Aa";
+          const full = (t.encode(probe) as number[]).map((id) => t.decode([id]));
+          const content = t.tokenize(probe) as string[];
+          if (full.length >= content.length + 2) {
+            special = { start: full[0], end: full[full.length - 1] };
+          }
+        } catch {
+          special = null;
+        }
         return {
           name: s.name,
           marker: s.marker,
+          special,
           tokenize: (txt: string) => (txt ? (t.tokenize(txt) as string[]) : []),
         };
       })

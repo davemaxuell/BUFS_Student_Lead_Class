@@ -126,6 +126,15 @@ export const S = {
       en: "Tip: paste a Korean sentence and an English one to compare how each model marks word boundaries — and how many more pieces Korean needs.",
       ko: "팁: 한국어 문장과 영어 문장을 붙여넣어 각 모델이 단어 경계를 어떻게 표시하는지, 한국어가 조각을 얼마나 더 쓰는지 비교해 보세요.",
     },
+    special: {
+      start: { en: "start", ko: "시작" },
+      end: { en: "end", ko: "끝" },
+      total: { en: "with start/end", ko: "시작/끝 포함" },
+      note: {
+        en: "👉 Models also add special tokens marking the start and end of the input — and these count as tokens too. BERT adds [CLS] … [SEP]; XLM-R adds <s> … </s>. (GPT-2 adds none here.) They appear as the greyed chips around your text above.",
+        ko: "👉 모델은 입력의 시작과 끝을 표시하는 특수 토큰도 추가하며, 이것도 토큰으로 셉니다. BERT는 [CLS] … [SEP], XLM-R은 <s> … </s>를 추가합니다. (GPT-2는 여기서 추가하지 않음.) 위 텍스트 양옆의 회색 칩이 그것입니다.",
+      },
+    },
   },
 
   norm: {

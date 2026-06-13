@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { S, useLang } from "@/lib/i18n";
 import { charTokens, wordTokens, subwordTokens, showWhitespace } from "@/lib/tokenize";
+import { NumberedChip } from "@/lib/chip";
 
 const EXAMPLES: { label: string; text: string }[] = [
   { label: "EN", text: "Tokenization isn't always intuitive!" },
@@ -48,7 +49,7 @@ export default function TokenizationComparison() {
             </div>
             <div className="chips">
               {chars.map((c, i) => (
-                <span className="chip" key={i}>{showWhitespace(c)}</span>
+                <NumberedChip key={i} i={i}>{showWhitespace(c)}</NumberedChip>
               ))}
             </div>
             <p className="desc" style={{ marginTop: 10 }}>{t.charDesc[lang]}</p>
@@ -62,7 +63,7 @@ export default function TokenizationComparison() {
             </div>
             <div className="chips">
               {words.map((w, i) => (
-                <span className="chip" key={i}>{showWhitespace(w)}</span>
+                <NumberedChip key={i} i={i}>{showWhitespace(w)}</NumberedChip>
               ))}
             </div>
             <p className="desc" style={{ marginTop: 10 }}>{t.wordDesc[lang]}</p>
@@ -76,13 +77,9 @@ export default function TokenizationComparison() {
             </div>
             <div className="chips">
               {subs.map((s, i) => (
-                <span
-                  className={"chip" + (s.broken ? " broken" : "")}
-                  key={i}
-                  title={`id ${s.id}`}
-                >
+                <NumberedChip key={i} i={i} broken={s.broken} title={`id ${s.id}`}>
                   {s.broken ? "⟨byte⟩" : showWhitespace(s.text)}
-                </span>
+                </NumberedChip>
               ))}
             </div>
             <p className="desc" style={{ marginTop: 10 }}>{t.subDesc[lang]}</p>
