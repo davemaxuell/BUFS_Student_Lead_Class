@@ -188,12 +188,13 @@ export const S = {
     addPlaceholder: { en: "Add a word (any language)…", ko: "단어 추가 (아무 언어)…" },
     addBtn: { en: "+ Add", ko: "+ 추가" },
     neighbors: { en: "Closest by real cosine similarity", ko: "실제 코사인 유사도로 가장 가까운 단어" },
-    dragHint: { en: "Drag to rotate (stops the spin) · +/− to zoom · click a word · gold lines = country↔capital", ko: "드래그=회전(자동회전 멈춤) · +/−=확대 · 단어 클릭 · 금색 선=나라↔수도" },
+    dragHint: { en: "Drag to rotate · +/− to zoom · X·Y·Z axes rotate with you (the 3 PCA directions) · click a word · gold lines = country↔capital", ko: "드래그=회전 · +/−=확대 · X·Y·Z 축이 함께 회전(3개의 PCA 방향) · 단어 클릭 · 금색 선=나라↔수도" },
     busy: { en: "embedding…", ko: "임베딩 중…" },
-    spinOn: { en: "⟳ Spinning", ko: "⟳ 회전 중" },
-    spinOff: { en: "⟳ Spin", ko: "⟳ 회전" },
+    resetView: { en: "⤾ Reset view", ko: "⤾ 시점 초기화" },
     relTitle: { en: "The “capital of” relationship (real similarity)", ko: "“수도” 관계 (실제 유사도)" },
-    relNote: { en: "Korea↔Seoul, Japan↔Tokyo, France↔Paris score about the SAME — every country sits a similar step from its capital. The relationship is a consistent direction in this space, which is exactly what lets embeddings do analogies.", ko: "한국↔서울, 일본↔도쿄, 프랑스↔파리의 점수가 거의 같습니다 — 모든 나라가 수도와 비슷한 거리에 있습니다. 이 관계는 공간 안에서 일관된 방향이며, 임베딩이 유추(analogy)를 할 수 있는 이유입니다." },
+    relNote: { en: "Korea↔Seoul, Japan↔Tokyo, France↔Paris score about the SAME — every country sits a similar step from its capital. The relationship is a consistent direction in this space, which is exactly what lets embeddings do analogies. Click any word to see ITS relationships.", ko: "한국↔서울, 일본↔도쿄, 프랑스↔파리의 점수가 거의 같습니다 — 모든 나라가 수도와 비슷한 거리에 있습니다. 이 관계는 공간 안에서 일관된 방향이며, 임베딩이 유추(analogy)를 할 수 있는 이유입니다. 아무 단어나 클릭하면 그 단어의 관계가 보입니다." },
+    relSelTitle: { en: "How “{w}” relates to every other token (real cosine similarity)", ko: "“{w}”와 다른 모든 토큰의 관계 (실제 코사인 유사도)" },
+    relSelNote: { en: "These are real similarities measured in the full 384-D space. Click another word (or a row) to compare; click the same dot again for the country↔capital view.", ko: "전체 384차원 공간에서 측정한 실제 유사도입니다. 다른 단어(또는 행)를 클릭해 비교하고, 같은 점을 다시 클릭하면 나라↔수도 화면으로 돌아갑니다." },
   },
 
   emblearn: {
