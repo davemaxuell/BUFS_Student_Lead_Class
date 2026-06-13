@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { S, useLang } from "@/lib/i18n";
 import { loadEmbedder, embed } from "@/lib/embedder";
 import { pca3, cosine } from "@/lib/pca";
@@ -14,7 +14,8 @@ const DEFAULT_WORDS = [
 export default function Embed3D() {
   const { lang } = useLang();
   const t = S.emb3d;
-  const [status, setStatus] = useState<Status>("idle");
+  const [status, setStatus] = useState<Status>("loading");
+  const [progress, setProgress] = useState(0);
   const [words, setWords] = useState<string[]>([]);
   const [vecs, setVecs] = useState<number[][]>([]);
   const [coords, setCoords] = useState<number[][]>([]);
@@ -30,7 +31,8 @@ export default function Embed3D() {
 
   const load = () => {
     setStatus("loading");
-    loadEmbedder()
+    setProgress(0);
+    loadEmbedder((pct) => setProgress(pct))
       .then(async (pipe) => {
         pipeRef.current = pipe;
         const vs: number[][] = [];
@@ -42,6 +44,11 @@ export default function Embed3D() {
       })
       .catch(() => setStatus("error"));
   };
+
+  // Load the model automatically as soon as the page starts.
+  useEffect(() => {
+    load();
+  }, []);
 
   const addWord = async () => {
     const w = input.trim();
@@ -115,10 +122,14 @@ export default function Embed3D() {
         <h3 style={{ fontSize: "1.2rem", marginTop: 8 }}>🧭 {t.title[lang]}</h3>
         <p className="lead">{t.intro[lang]}</p>
 
-        {status === "idle" && (
-          <button className="lang-btn" style={{ marginTop: 12 }} onClick={load}>{t.loadBtn[lang]}</button>
+        {status === "loading" && (
+          <div style={{ marginTop: 12, maxWidth: 360 }}>
+            <p className="lead" style={{ marginBottom: 6 }}>⏳ {t.loading[lang]} {progress > 0 && progress < 100 ? `(${progress}%)` : ""}</p>
+            <div className="bar-track">
+              <div className="bar-fill" style={{ width: `${Math.max(progress, 3)}%`, transition: "width .2s" }} />
+            </div>
+          </div>
         )}
-        {status === "loading" && <p className="lead" style={{ marginTop: 12 }}>⏳ {t.loading[lang]}</p>}
         {status === "error" && (
           <div className="callout" style={{ borderLeftColor: "var(--danger)" }}>
             {t.error[lang]} <button className="preset" onClick={load}>{t.retry[lang]}</button>

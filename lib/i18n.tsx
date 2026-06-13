@@ -182,7 +182,7 @@ export const S = {
       ko: "같은 개념을 실제 모델로 실시간 3D에서. 모델이 각 단어를 384개 숫자의 벡터로 바꾸고, 이를 3D로 투영해 보여줍니다. 드래그로 회전, +/−로 확대/축소, 단어 클릭 시 가장 가까운 단어 표시. 아무 단어나(한국어도) 추가해 어디에 놓이는지 보세요.",
     },
     loadBtn: { en: "▶ Load the 3D word-vector explorer (downloads model once)", ko: "▶ 3D 단어 벡터 탐색기 불러오기 (모델 최초 1회 다운로드)" },
-    loading: { en: "Loading model & embedding words…", ko: "모델 불러오고 단어 임베딩 중…" },
+    loading: { en: "Downloading the embedding model (~23 MB, once) & embedding words…", ko: "임베딩 모델 내려받는 중 (~23MB, 최초 1회) & 단어 임베딩 중…" },
     error: { en: "Couldn't load (needs internet). The 2-D map above still works.", ko: "불러오기 실패(인터넷 필요). 위 2D 지도는 정상 동작합니다." },
     retry: { en: "Retry", ko: "다시 시도" },
     addPlaceholder: { en: "Add a word (any language)…", ko: "단어 추가 (아무 언어)…" },
