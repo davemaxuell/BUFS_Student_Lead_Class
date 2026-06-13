@@ -97,7 +97,7 @@ export default function LowResourceTax() {
 
         {/* Cost calculator */}
         <div className="card" style={{ marginTop: 18 }}>
-          <h3>🧮 {c.title[lang]}</h3>
+          <h3>{c.title[lang]}</h3>
           <p className="desc">{c.intro[lang]}</p>
 
           <div className="grid3" style={{ marginTop: 12 }}>
@@ -130,17 +130,17 @@ export default function LowResourceTax() {
 
           <div className="grid3" style={{ marginTop: 14 }}>
             <div className="card">
-              <div className="count-unit">🇬🇧 {c.enCost[lang]}</div>
+              <div className="count-unit">{c.enCost[lang]}</div>
               <div className="count-big">{fmt(enCost)}</div>
               <div className="count-unit">{enTok} {c.perMsg[lang]}</div>
             </div>
             <div className="card">
-              <div className="count-unit">🇰🇷 {c.koCost[lang]}</div>
+              <div className="count-unit">{c.koCost[lang]}</div>
               <div className="count-big">{fmt(koCost)}</div>
               <div className="count-unit">{koTok} {c.perMsg[lang]}</div>
             </div>
             <div className="card" style={{ borderColor: "var(--warn)" }}>
-              <div className="count-unit">⚖️ {c.extra[lang]}</div>
+              <div className="count-unit">{c.extra[lang]}</div>
               <div className="count-big" style={{ color: "var(--warn)" }}>{fmt(koCost - enCost)}</div>
               <div className="count-unit">{enTok > 0 ? (koTok / enTok).toFixed(1) : "–"}×</div>
             </div>

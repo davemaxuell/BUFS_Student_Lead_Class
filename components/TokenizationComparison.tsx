@@ -8,7 +8,7 @@ import { NumberedChip } from "@/lib/chip";
 const EXAMPLES: { label: string; text: string }[] = [
   { label: "EN", text: "Tokenization isn't always intuitive!" },
   { label: "KR", text: "학교에서 자연어를 공부해요." },
-  { label: "Mixed", text: "GPT는 한국어를 byte로 쪼개요 😅" },
+  { label: "Mixed", text: "GPT는 한국어를 byte로 쪼개요" },
 ];
 
 export default function TokenizationComparison() {

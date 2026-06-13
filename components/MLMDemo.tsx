@@ -83,7 +83,7 @@ export default function MLMDemo() {
 
   const maskChip = (
     <span className="chip" style={{ background: "#ffb45433", borderColor: "#ffb454", borderStyle: "dashed", color: "#fff", whiteSpace: "nowrap", fontWeight: 700 }}>
-      🔒 [MASK]
+      [MASK]
     </span>
   );
 
@@ -94,7 +94,7 @@ export default function MLMDemo() {
         <h2>{t.title[lang]}</h2>
         <p className="lead">{t.intro[lang]}</p>
 
-        {status === "loading" && <p className="lead" style={{ marginTop: 14 }}>⏳ {t.loading[lang]}</p>}
+        {status === "loading" && <p className="lead" style={{ marginTop: 14 }}>{t.loading[lang]}</p>}
         {status === "error" && (
           <div className="callout" style={{ borderLeftColor: "var(--danger)" }}>
             {t.error[lang]} <button className="preset" onClick={load}>{t.retry[lang]}</button>
@@ -133,7 +133,7 @@ export default function MLMDemo() {
                     {tokens.map((tk, i) =>
                       tk === "[MASK]" ? (
                         <span key={i} className="chip numbered" style={{ background: "#ffb45433", borderColor: "#ffb454", borderStyle: "dashed", color: "#fff" }}>
-                          <span className="tok">🔒 [MASK]</span>
+                          <span className="tok">[MASK]</span>
                           <span className="idx">{i + 1}</span>
                         </span>
                       ) : (

@@ -177,12 +177,12 @@ export default function Embed3D() {
   return (
     <section id="embed3d" style={{ borderTop: "none", paddingTop: 0 }}>
       <div className="container">
-        <h3 style={{ fontSize: "1.2rem", marginTop: 8 }}>🧭 {t.title[lang]}</h3>
+        <h3 style={{ fontSize: "1.2rem", marginTop: 8 }}>{t.title[lang]}</h3>
         <p className="lead">{t.intro[lang]}</p>
 
         {status === "loading" && (
           <div style={{ marginTop: 12, maxWidth: 360 }}>
-            <p className="lead" style={{ marginBottom: 6 }}>⏳ {t.loading[lang]} {progress > 0 && progress < 100 ? `(${progress}%)` : ""}</p>
+            <p className="lead" style={{ marginBottom: 6 }}>{t.loading[lang]} {progress > 0 && progress < 100 ? `(${progress}%)` : ""}</p>
             <div className="bar-track">
               <div className="bar-fill" style={{ width: `${Math.max(progress, 3)}%`, transition: "width .2s" }} />
             </div>

@@ -72,7 +72,7 @@ export default function TokenTaxHero() {
 
         <div className="grid2" style={{ marginTop: 22 }}>
           <div className="card">
-            <label className="label">🇬🇧 {S.hero.enLabel[lang]}</label>
+            <label className="label">{S.hero.enLabel[lang]}</label>
             <textarea rows={3} value={en} onChange={(e) => setEn(e.target.value)} />
             <div style={{ marginTop: 10 }}>
               <Counter value={enTok} unit={S.hero.tokens[lang]} />
@@ -80,7 +80,7 @@ export default function TokenTaxHero() {
             </div>
           </div>
           <div className="card">
-            <label className="label">🇰🇷 {S.hero.koLabel[lang]}</label>
+            <label className="label">{S.hero.koLabel[lang]}</label>
             <textarea rows={3} value={ko} onChange={(e) => setKo(e.target.value)} />
             <div style={{ marginTop: 10 }}>
               <Counter value={koTok} unit={S.hero.tokens[lang]} />

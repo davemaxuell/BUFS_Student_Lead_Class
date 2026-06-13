@@ -8,7 +8,7 @@ export default function Header() {
     <header className="header">
       <div className="header-inner">
         <div className="brand">
-          🧩 {S.meta.title[lang]} <span>· {lang === "en" ? "EN" : "KR"}</span>
+          {S.meta.title[lang]} <span>· {lang === "en" ? "EN" : "KR"}</span>
         </div>
         <nav className="nav">
           <a href="#nnb">{S.nav.learn[lang]}</a>
@@ -24,7 +24,7 @@ export default function Header() {
           onClick={() => setLang(lang === "en" ? "ko" : "en")}
           aria-label="Toggle language"
         >
-          🌐 {S.langToggle[lang]}
+          {S.langToggle[lang]}
         </button>
       </div>
     </header>

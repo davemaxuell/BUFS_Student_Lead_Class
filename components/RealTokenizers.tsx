@@ -60,7 +60,7 @@ export default function RealTokenizers() {
           </button>
         )}
         {status === "loading" && (
-          <p className="lead" style={{ marginTop: 14 }}>⏳ {r.loading[lang]}</p>
+          <p className="lead" style={{ marginTop: 14 }}>{r.loading[lang]}</p>
         )}
         {status === "error" && (
           <div className="callout" style={{ borderLeftColor: "var(--danger)" }}>
