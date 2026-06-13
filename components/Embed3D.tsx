@@ -8,7 +8,14 @@ import { pca3, cosine } from "@/lib/pca";
 type Status = "idle" | "loading" | "ready" | "error";
 const DEFAULT_WORDS = [
   "king", "queen", "man", "woman", "dog", "cat", "apple", "banana",
-  "Seoul", "Korea", "Tokyo", "Japan", "one", "two", "happy", "sad",
+  "Seoul", "Korea", "Tokyo", "Japan", "Paris", "France", "happy", "sad",
+];
+
+// country ↔ its capital — the relationship we want to show is consistent
+const REL_PAIRS: [string, string][] = [
+  ["Korea", "Seoul"],
+  ["Japan", "Tokyo"],
+  ["France", "Paris"],
 ];
 
 export default function Embed3D() {
@@ -25,9 +32,22 @@ export default function Embed3D() {
   const [yaw, setYaw] = useState(0.6);
   const [pitch, setPitch] = useState(0.3);
   const [zoom, setZoom] = useState(1);
+  const [spin, setSpin] = useState(true);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const pipeRef = useRef<any>(null);
   const drag = useRef<{ x: number; y: number; yaw: number; pitch: number } | null>(null);
+
+  // gentle auto-rotation so the 3-D shape reads as 3-D at a glance
+  useEffect(() => {
+    if (!spin || status !== "ready") return;
+    let raf = 0;
+    const tick = () => {
+      setYaw((y) => y + 0.006);
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [spin, status]);
 
   const load = () => {
     setStatus("loading");
@@ -101,6 +121,18 @@ export default function Embed3D() {
   const order = [...projected].sort((a, b) => a.depth - b.depth);
   const nbSet = new Set(neighbors.map((n) => n.i));
 
+  // Real similarity of each country↔capital pair, measured in the FULL space.
+  const rels = useMemo(() => {
+    return REL_PAIRS.map(([a, b]) => {
+      const ia = words.indexOf(a);
+      const ib = words.indexOf(b);
+      if (ia < 0 || ib < 0 || !vecs[ia] || !vecs[ib]) return null;
+      return { a, b, ia, ib, sim: cosine(vecs[ia], vecs[ib]) };
+    }).filter(Boolean) as { a: string; b: string; ia: number; ib: number; sim: number }[];
+  }, [words, vecs]);
+
+  const projAt = (i: number) => projected.find((p) => p.i === i);
+
   const onDown = (e: React.PointerEvent) => {
     drag.current = { x: e.clientX, y: e.clientY, yaw, pitch };
     (e.target as Element).setPointerCapture?.(e.pointerId);
@@ -149,6 +181,7 @@ export default function Embed3D() {
                   style={{ flex: 1, minWidth: 160 }}
                 />
                 <button className="lang-btn" onClick={addWord} disabled={busy}>{busy ? t.busy[lang] : t.addBtn[lang]}</button>
+                <button className="preset" onClick={() => setSpin((s) => !s)} style={spin ? { borderColor: "var(--accent)", color: "var(--text)" } : {}}>{spin ? t.spinOn[lang] : t.spinOff[lang]}</button>
                 <button className="preset" onClick={() => setZoom((z) => Math.min(3, z * 1.2))}>+</button>
                 <button className="preset" onClick={() => setZoom((z) => Math.max(0.4, z / 1.2))}>−</button>
               </div>
@@ -156,11 +189,25 @@ export default function Embed3D() {
               <svg
                 viewBox="0 0 480 420"
                 style={{ width: "100%", height: "auto", touchAction: "none", cursor: "grab", borderRadius: 10, border: "1px solid var(--line)", background: "#0d1430" }}
-                onPointerDown={onDown}
+                onPointerDown={(e) => { setSpin(false); onDown(e); }}
                 onPointerMove={onMove}
                 onPointerUp={onUp}
                 onPointerLeave={onUp}
               >
+                {/* country ↔ capital relationship links (gold) */}
+                {rels.map((r) => {
+                  const a = projAt(r.ia);
+                  const b = projAt(r.ib);
+                  if (!a || !b) return null;
+                  return (
+                    <g key={r.a}>
+                      <line x1={a.sx} y1={a.sy} x2={b.sx} y2={b.sy} stroke="#ffd479" strokeWidth={2} opacity={0.9} />
+                      <text x={(a.sx + b.sx) / 2} y={(a.sy + b.sy) / 2 - 3} fontSize={10} fontWeight={700} fill="#ffd479" textAnchor="middle">
+                        {(r.sim * 100).toFixed(0)}%
+                      </text>
+                    </g>
+                  );
+                })}
                 {/* neighbor links */}
                 {sel !== null &&
                   neighbors.map((n) => {
@@ -192,6 +239,22 @@ export default function Embed3D() {
               <div className="callout">
                 <b>{words[sel]}</b> — {t.neighbors[lang]}:{" "}
                 {neighbors.map((n) => `${n.w} (${(n.s * 100).toFixed(0)}%)`).join(", ")}
+              </div>
+            )}
+
+            {rels.length > 1 && (
+              <div className="card" style={{ marginTop: 14 }}>
+                <div className="label" style={{ color: "#ffd479" }}>{t.relTitle[lang]}</div>
+                {rels.map((r) => (
+                  <div className="bar-row" key={r.a} style={{ gridTemplateColumns: "150px 1fr 56px" }}>
+                    <div className="bar-label">{r.a} ↔ {r.b}</div>
+                    <div className="bar-track">
+                      <div className="bar-fill" style={{ width: `${Math.max(r.sim * 100, 3)}%`, background: "#ffd479" }} />
+                    </div>
+                    <div className="bar-meta">{(r.sim * 100).toFixed(0)}%</div>
+                  </div>
+                ))}
+                <div className="note">{t.relNote[lang]}</div>
               </div>
             )}
           </>
