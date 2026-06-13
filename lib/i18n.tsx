@@ -192,6 +192,63 @@ export const S = {
     busy: { en: "embedding…", ko: "임베딩 중…" },
   },
 
+  emblearn: {
+    eyebrow: { en: "HOW A TOKEN GETS ITS VECTOR", ko: "토큰은 어떻게 벡터를 얻나" },
+    title: { en: "Learning an embedding from scratch", ko: "임베딩을 처음부터 학습하기" },
+    intro: {
+      en: "A network can't read letters — only numbers. So every token is handed a short list of numbers called its embedding (here just 2 numbers, so we can plot it). At the start these numbers are RANDOM. Watch the network learn better ones, live.",
+      ko: "신경망은 글자를 읽지 못하고 숫자만 압니다. 그래서 모든 토큰에는 임베딩이라는 짧은 숫자 목록이 주어집니다(여기선 2개라 그래프로 그릴 수 있어요). 처음엔 이 숫자가 무작위입니다. 신경망이 더 나은 값을 학습하는 과정을 실시간으로 보세요.",
+    },
+    how: {
+      en: "The rule it learns by: tokens that appear together in the text get PULLED closer; random unrelated tokens get PUSHED apart. Repeat over the whole corpus and every token drifts to a spot that reflects its meaning. (This is the idea behind word2vec.)",
+      ko: "학습 규칙: 글에서 함께 등장하는 토큰은 서로 가까이 당겨지고, 무관한 무작위 토큰은 서로 밀어냅니다. 말뭉치 전체에 반복하면 각 토큰이 의미를 반영하는 위치로 이동합니다. (word2vec의 핵심 아이디어입니다.)",
+    },
+    lookup: { en: "Token → ID → vector (a row in the embedding table)", ko: "토큰 → ID → 벡터 (임베딩 표의 한 행)" },
+    id: { en: "id", ko: "ID" },
+    vector: { en: "vector", ko: "벡터" },
+    lookupNote: { en: "Click any dot or row to inspect its vector. Each token is just a row number into a big table of learnable numbers.", ko: "점이나 행을 클릭해 벡터를 살펴보세요. 각 토큰은 학습 가능한 숫자들의 큰 표에서 행 번호일 뿐입니다." },
+    play: { en: "▶ Train", ko: "▶ 학습" },
+    pause: { en: "⏸ Pause", ko: "⏸ 정지" },
+    step: { en: "Train 15 steps", ko: "15단계 학습" },
+    reset: { en: "↻ Reset (re-randomize)", ko: "↻ 초기화 (무작위로)" },
+    epoch: { en: "epoch", ko: "에폭" },
+    dist: { en: "avg distance of related pairs:", ko: "관련 쌍 평균 거리:" },
+    plotTitle: { en: "Each token's 2-number vector, plotted", ko: "각 토큰의 2-숫자 벡터를 그린 그래프" },
+    plotNote: { en: "Colors mark the hidden topics — the model is never told them; clusters EMERGE from co-occurrence alone.", ko: "색은 숨은 주제를 표시합니다 — 모델은 주제를 모릅니다. 군집은 오직 동시출현에서 저절로 생깁니다." },
+    tableTitle: { en: "The embedding table (updates as it learns)", ko: "임베딩 표 (학습하며 갱신됨)" },
+    closest: { en: "closest tokens now", ko: "지금 가장 가까운 토큰" },
+    nStart: { en: "Everything starts as a random cloud — these numbers mean nothing yet. Press Train.", ko: "모든 것이 무작위 구름에서 시작합니다 — 아직 숫자는 의미가 없습니다. 학습을 누르세요." },
+    nLearn: { en: "Learning… related tokens pull together, unrelated ones drift apart. The numbers in the table are changing.", ko: "학습 중… 관련 토큰은 모이고, 무관한 토큰은 멀어집니다. 표의 숫자가 바뀌고 있습니다." },
+    nDone: { en: "Settled. Tokens with similar meaning now sit together — that grouping IS the learned embedding. This is what the 2-D and 3-D maps below show with a real model.", ko: "안정됨. 의미가 비슷한 토큰이 모여 있습니다 — 이 군집이 바로 학습된 임베딩입니다. 아래 2D·3D 지도는 실제 모델로 이것을 보여줍니다." },
+  },
+
+  groups: {
+    foundations: {
+      title: { en: "Foundations — how a network learns", ko: "기초 — 신경망은 어떻게 학습하나" },
+      sub: { en: "A neuron, training a classifier, and one full backprop step.", ko: "뉴런, 분류기 학습, 그리고 역전파 한 단계." },
+    },
+    tokenizer: {
+      title: { en: "Tokenizer — text into pieces", ko: "토크나이저 — 텍스트를 조각으로" },
+      sub: { en: "First, text is split into subword tokens. The tokenizer is trained too.", ko: "먼저 텍스트를 서브워드 토큰으로 나눕니다. 토크나이저도 학습됩니다." },
+    },
+    encoder: {
+      title: { en: "Encoder — learning meaning", ko: "인코더 — 의미 학습하기" },
+      sub: { en: "A real BERT learns by filling in masked blanks (self-supervised).", ko: "실제 BERT가 가려진 빈칸을 채우며 학습합니다(자기지도)." },
+    },
+    embeddings: {
+      title: { en: "Embeddings — tokens as vectors", ko: "임베딩 — 토큰을 벡터로" },
+      sub: { en: "How a token gets its vector, then real word maps in 2-D and 3-D.", ko: "토큰이 벡터를 얻는 방법, 그리고 실제 단어 지도(2D·3D)." },
+    },
+    tokenization: {
+      title: { en: "Tokenization & the token tax", ko: "토큰화와 토큰세" },
+      sub: { en: "Why Korean and low-resource languages cost more tokens.", ko: "한국어·저자원 언어가 토큰을 더 많이 쓰는 이유." },
+    },
+    reference: {
+      title: { en: "Reference", ko: "참고 자료" },
+      sub: { en: "Vocabulary card for the key terms.", ko: "핵심 용어 카드." },
+    },
+  },
+
   bpetrain: {
     eyebrow: { en: "HOW A TOKENIZER LEARNS", ko: "토크나이저는 어떻게 학습하나" },
     title: { en: "Training a tokenizer (BPE)", ko: "토크나이저 학습하기 (BPE)" },
