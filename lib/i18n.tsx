@@ -123,6 +123,31 @@ export const S = {
     lr: { en: "learning rate", ko: "학습률" },
   },
 
+  mlm: {
+    eyebrow: { en: "HOW THE ENCODER TRAINS", ko: "인코더는 이렇게 학습한다" },
+    title: { en: "Masked Language Modeling — fill in the blank", ko: "마스크 언어 모델링 — 빈칸 채우기" },
+    intro: {
+      en: "This is how modern text encoders (BERT, RoBERTa, XLM-R) actually learn — with no human labels. Hide a word with [MASK] and the model must predict it from context. Repeat over billions of sentences and it absorbs grammar, facts, and meaning. Below is a REAL multilingual BERT predicting live in your browser.",
+      ko: "최신 텍스트 인코더(BERT, RoBERTa, XLM-R)가 실제로 학습하는 방식 — 사람이 만든 라벨 없이. 단어를 [MASK]로 가리면 모델이 문맥으로 그 단어를 예측해야 합니다. 수십억 문장에 반복하면 문법·사실·의미를 흡수합니다. 아래는 브라우저에서 실시간으로 예측하는 진짜 다국어 BERT입니다.",
+    },
+    loadBtn: { en: "▶ Load the real BERT (downloads weights once)", ko: "▶ 진짜 BERT 불러오기 (가중치 최초 1회 다운로드)" },
+    loading: { en: "Downloading BERT… (bigger than the tokenizers — a moment)", ko: "BERT 내려받는 중… (토크나이저보다 큼 — 잠시만요)" },
+    error: { en: "Couldn't load (needs internet & some memory). The rest of the page still works.", ko: "불러오기 실패(인터넷·메모리 필요). 나머지 페이지는 정상 동작합니다." },
+    retry: { en: "Retry", ko: "다시 시도" },
+    inputLabel: { en: "Sentence (use [MASK] for the blank)", ko: "문장 ([MASK]로 빈칸 표시)" },
+    predict: { en: "Predict the [MASK] ▶", ko: "[MASK] 예측하기 ▶" },
+    predicting: { en: "Thinking…", ko: "생각 중…" },
+    maskHint: { en: "Put exactly one [MASK] in the sentence.", ko: "문장에 [MASK]를 정확히 한 개 넣으세요." },
+    insertMask: { en: "Insert [MASK]", ko: "[MASK] 넣기" },
+    presetEn: { en: "English example", ko: "영어 예시" },
+    presetKr: { en: "Korean example", ko: "한국어 예시" },
+    results: { en: "BERT's top guesses", ko: "BERT의 상위 예측" },
+    note: {
+      en: "Nobody labeled these answers — the sentence is its own answer key. That's “self-supervised” learning, and it's why encoders can train on the whole internet without armies of annotators.",
+      ko: "이 정답을 라벨링한 사람은 없습니다 — 문장 자체가 정답지입니다. 이것이 ‘자기지도(self-supervised)’ 학습이며, 인코더가 수많은 주석자 없이도 인터넷 전체로 학습할 수 있는 이유입니다.",
+    },
+  },
+
   emb: {
     eyebrow: { en: "FROM PICTURES TO WORDS", ko: "그림에서 언어로" },
     title: { en: "Turning words into numbers (embeddings)", ko: "단어를 숫자로 (임베딩)" },

@@ -5,6 +5,7 @@ import Header from "@/components/Header";
 import NeuralNetBasics from "@/components/NeuralNetBasics";
 import ClassificationTrainer from "@/components/ClassificationTrainer";
 import BackpropSequence from "@/components/BackpropSequence";
+import MLMDemo from "@/components/MLMDemo";
 import EmbeddingViz from "@/components/EmbeddingViz";
 import BPETrainer from "@/components/BPETrainer";
 import TokenTaxHero from "@/components/TokenTaxHero";
@@ -34,6 +35,7 @@ export default function Page() {
         <NeuralNetBasics />
         <ClassificationTrainer />
         <BackpropSequence />
+        <MLMDemo />
         <EmbeddingViz />
         <BPETrainer />
         <TokenTaxHero />
