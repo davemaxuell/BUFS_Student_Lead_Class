@@ -197,6 +197,12 @@ export const S = {
     relNote: { en: "Korea↔Seoul, Japan↔Tokyo, France↔Paris score about the SAME — every country sits a similar step from its capital. The relationship is a consistent direction in this space, which is exactly what lets embeddings do analogies. Click any word to see ITS relationships.", ko: "한국↔서울, 일본↔도쿄, 프랑스↔파리의 점수가 거의 같습니다 — 모든 나라가 수도와 비슷한 거리에 있습니다. 이 관계는 공간 안에서 일관된 방향이며, 임베딩이 유추(analogy)를 할 수 있는 이유입니다. 아무 단어나 클릭하면 그 단어의 관계가 보입니다." },
     relSelTitle: { en: "How “{w}” relates to every other token (real cosine similarity)", ko: "“{w}”와 다른 모든 토큰의 관계 (실제 코사인 유사도)" },
     relSelNote: { en: "These are real similarities measured in the full 384-D space. Click another word (or a row) to compare; click the same dot again for the country↔capital view.", ko: "전체 384차원 공간에서 측정한 실제 유사도입니다. 다른 단어(또는 행)를 클릭해 비교하고, 같은 점을 다시 클릭하면 나라↔수도 화면으로 돌아갑니다." },
+    anaTitle: { en: "Compare two relationships:  A − B  vs  C − D", ko: "두 관계 비교하기:  A − B  대  C − D" },
+    dirMatch: { en: "direction match", ko: "방향 일치도" },
+    anaHigh: { en: "Same relationship! “{a}−{b}” points almost the same way as “{c}−{d}”. That direction IS the relationship — this is how embeddings solve analogies (A is to B as C is to D).", ko: "같은 관계! “{a}−{b}”가 “{c}−{d}”와 거의 같은 방향을 가리킵니다. 그 방향이 곧 관계입니다 — 임베딩이 유추를 푸는 원리입니다 (A:B = C:D)." },
+    anaMid: { en: "Somewhat related — the two difference vectors partly agree. Try a cleaner pair (e.g. Seoul−Korea vs Tokyo−Japan).", ko: "어느 정도 관련 — 두 차이 벡터가 부분적으로 일치합니다. 더 분명한 쌍을 시도해 보세요 (예: 서울−한국 대 도쿄−일본)." },
+    anaLow: { en: "Different relationships — “{a}−{b}” and “{c}−{d}” point different ways, so the value is low.", ko: "다른 관계 — “{a}−{b}”와 “{c}−{d}”가 다른 방향을 가리켜서 값이 낮습니다." },
+    anaNote: { en: "Purple arrow = X₁ (B→A), orange arrow = X₂ (D→C) in the plot above. Measured in the full 384-D space, not the 3-D picture.", ko: "위 그래프의 보라색 화살표 = X₁ (B→A), 주황색 화살표 = X₂ (D→C). 3D 그림이 아니라 전체 384차원 공간에서 측정합니다." },
   },
 
   embedvocab: {
@@ -277,6 +283,7 @@ export const S = {
     play: { en: "▶ Auto", ko: "▶ 자동" },
     pause: { en: "⏸ Pause", ko: "⏸ 정지" },
     reset: { en: "↻ Reset", ko: "↻ 초기화" },
+    speed: { en: "Speed", ko: "속도" },
     iter: { en: "step", ko: "단계" },
     st0: { en: "token ID", ko: "토큰 ID" },
     st1: { en: "embedding lookup", ko: "임베딩 조회" },

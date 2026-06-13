@@ -29,6 +29,7 @@ export default function Embed3D() {
   const [sel, setSel] = useState<number | null>(null);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
+  const [ana, setAna] = useState({ a: 0, b: 1, c: 2, d: 3 }); // analogy A−B vs C−D
   const [yaw, setYaw] = useState(0.6);
   const [pitch, setPitch] = useState(0.3);
   const [zoom, setZoom] = useState(1);
@@ -56,6 +57,16 @@ export default function Embed3D() {
   useEffect(() => {
     load();
   }, []);
+
+  // default the analogy to Seoul−Korea vs Tokyo−Japan once the words exist
+  useEffect(() => {
+    if (status !== "ready") return;
+    const ix = (w: string, fb: number) => {
+      const i = DEFAULT_WORDS.indexOf(w);
+      return i < 0 ? fb : i;
+    };
+    setAna({ a: ix("Seoul", 0), b: ix("Korea", 1), c: ix("Tokyo", 2), d: ix("Japan", 3) });
+  }, [status]);
 
   const addWord = async () => {
     const w = input.trim();
@@ -93,6 +104,18 @@ export default function Embed3D() {
       .sort((a, b) => b.s - a.s)
       .slice(0, 8);
   }, [sel, vecs, words]);
+
+  // Analogy: X1 = A − B, X2 = C − D, measured in the FULL embedding space.
+  // If A:B and C:D share a relationship, X1 and X2 point the same way (cosine ≈ 1).
+  const analogy = useMemo(() => {
+    const { a, b, c, d } = ana;
+    if (!vecs[a] || !vecs[b] || !vecs[c] || !vecs[d]) return null;
+    const sub = (p: number[], q: number[]) => p.map((x, i) => x - q[i]);
+    const norm = (v: number[]) => Math.sqrt(v.reduce((s, x) => s + x * x, 0));
+    const x1 = sub(vecs[a], vecs[b]);
+    const x2 = sub(vecs[c], vecs[d]);
+    return { cos: cosine(x1, x2), m1: norm(x1), m2: norm(x2) };
+  }, [ana, vecs]);
 
   // shared 3-D → 2-D projection (used for both the points and the X/Y/Z axes)
   const view = useMemo(() => {
@@ -219,6 +242,20 @@ export default function Embed3D() {
                     </g>
                   );
                 })}
+                {/* analogy offset arrows: B→A (X1) and D→C (X2) */}
+                <defs>
+                  <marker id="anaArr1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#9b8cff" /></marker>
+                  <marker id="anaArr2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#ff9d5c" /></marker>
+                </defs>
+                {analogy && (() => {
+                  const A = projAt(ana.a), B = projAt(ana.b), C = projAt(ana.c), D = projAt(ana.d);
+                  return (
+                    <>
+                      {B && A && <line x1={B.sx} y1={B.sy} x2={A.sx} y2={A.sy} stroke="#9b8cff" strokeWidth={2.4} markerEnd="url(#anaArr1)" />}
+                      {D && C && <line x1={D.sx} y1={D.sy} x2={C.sx} y2={C.sy} stroke="#ff9d5c" strokeWidth={2.4} markerEnd="url(#anaArr2)" />}
+                    </>
+                  );
+                })()}
                 {/* neighbor links */}
                 {sel !== null &&
                   neighbors.map((n) => {
@@ -277,6 +314,44 @@ export default function Embed3D() {
                     <div className="note">{t.relSelNote[lang]}</div>
                   </div>
                 )}
+
+            {/* analogy: A − B  vs  C − D */}
+            {analogy && (
+              <div className="card" style={{ marginTop: 14 }}>
+                <div className="label">{t.anaTitle[lang]}</div>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 6, alignItems: "center", fontFamily: "ui-monospace, monospace" }}>
+                  <b style={{ color: "#9b8cff" }}>X₁ =</b>
+                  {(["a", "b"] as const).map((key, idx) => (
+                    <span key={key} style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                      {idx === 1 && <span>−</span>}
+                      <select value={ana[key]} onChange={(e) => setAna({ ...ana, [key]: +e.target.value })} style={{ minWidth: 86 }}>
+                        {words.map((w, i) => <option key={i} value={i}>{w}</option>)}
+                      </select>
+                    </span>
+                  ))}
+                  <b style={{ color: "#ff9d5c", marginLeft: 10 }}>X₂ =</b>
+                  {(["c", "d"] as const).map((key, idx) => (
+                    <span key={key} style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                      {idx === 1 && <span>−</span>}
+                      <select value={ana[key]} onChange={(e) => setAna({ ...ana, [key]: +e.target.value })} style={{ minWidth: 86 }}>
+                        {words.map((w, i) => <option key={i} value={i}>{w}</option>)}
+                      </select>
+                    </span>
+                  ))}
+                </div>
+                <div className="bar-row" style={{ gridTemplateColumns: "150px 1fr 56px", marginTop: 12 }}>
+                  <div className="bar-label">{t.dirMatch[lang]}</div>
+                  <div className="bar-track"><div className="bar-fill" style={{ width: `${Math.max(analogy.cos * 100, 3)}%`, background: analogy.cos > 0.45 ? "#5fe08a" : "#ffb454" }} /></div>
+                  <div className="bar-meta">{(analogy.cos * 100).toFixed(0)}%</div>
+                </div>
+                <div className="note" style={{ fontFamily: "ui-monospace, monospace" }}>|X₁| = {analogy.m1.toFixed(2)} · |X₂| = {analogy.m2.toFixed(2)}</div>
+                <div className="callout" style={{ borderLeftColor: analogy.cos > 0.45 ? "#5fe08a" : "#ffb454", marginTop: 8 }}>
+                  {(analogy.cos > 0.45 ? t.anaHigh[lang] : analogy.cos > 0.2 ? t.anaMid[lang] : t.anaLow[lang])
+                    .replace("{a}", words[ana.a]).replace("{b}", words[ana.b]).replace("{c}", words[ana.c]).replace("{d}", words[ana.d])}
+                </div>
+                <div className="note">{t.anaNote[lang]}</div>
+              </div>
+            )}
           </>
         )}
       </div>

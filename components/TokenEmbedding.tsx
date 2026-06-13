@@ -54,9 +54,15 @@ export default function TokenEmbedding() {
   useEffect(() => {
     if (!playing) return;
     let stop = false;
-    const tick = () => {
+    let last = 0;
+    const tick = (ts: number) => {
       if (stop) return;
-      runRef.current(1);
+      // ~1 epoch per 90ms (≈11/s) instead of every frame, so the dots move
+      // slowly enough to actually watch them organize.
+      if (ts - last > 90) {
+        runRef.current(1);
+        last = ts;
+      }
       rafRef.current = requestAnimationFrame(tick);
     };
     rafRef.current = requestAnimationFrame(tick);

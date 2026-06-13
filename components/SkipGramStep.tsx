@@ -23,6 +23,7 @@ export default function SkipGramStep() {
   const [iter, setIter] = useState(0);
   const [tick, setTick] = useState(0);
   const [playing, setPlaying] = useState(false);
+  const [speed, setSpeed] = useState(1); // 1× / 2× / 4× auto speed
   const [pre, setPre] = useState<{ old: number[]; lossOld: number; lossNew: number } | null>(null);
   const seedRef = useRef(2);
 
@@ -55,9 +56,9 @@ export default function SkipGramStep() {
   nextRef.current = next;
   useEffect(() => {
     if (!playing) return;
-    const id = setInterval(() => nextRef.current(), 1600);
+    const id = setInterval(() => nextRef.current(), Math.round(1600 / speed));
     return () => clearInterval(id);
-  }, [playing]);
+  }, [playing, speed]);
 
   const pickCenter = (c: number) => {
     setPlaying(false);
@@ -209,6 +210,7 @@ export default function SkipGramStep() {
         <div className="btnrow" style={{ marginTop: 12 }}>
           <button className="lang-btn" onClick={next}>{t.next[lang]}</button>
           <button className="preset" onClick={() => setPlaying((p) => !p)}>{playing ? t.pause[lang] : t.play[lang]}</button>
+          <button className="preset" onClick={() => setSpeed((s) => (s >= 4 ? 1 : s * 2))}>{t.speed[lang]} {speed}×</button>
           <button className="preset" onClick={reset}>{t.reset[lang]}</button>
           <span className="count-unit" style={{ alignSelf: "center" }}>{t.iter[lang]} {iter}</span>
         </div>
