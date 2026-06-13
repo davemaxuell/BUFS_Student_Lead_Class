@@ -3,7 +3,7 @@
 // is this model's live predictions. Runs fine in the browser.
 
 export type Point = { x: number; y: number; label: number };
-export type DatasetKind = "blobs" | "circle" | "xor";
+export type DatasetKind = "blobs" | "circle" | "xor" | "moons" | "spiral";
 
 function randn(): number {
   // Box–Muller
@@ -26,11 +26,34 @@ export function makeDataset(kind: DatasetKind, n = 160): Point[] {
       const x = Math.random() * 2 - 1;
       const y = Math.random() * 2 - 1;
       pts.push({ x, y, label: x * x + y * y < 0.4 ? 1 : 0 });
-    } else {
+    } else if (kind === "xor") {
       // xor — not linearly separable; needs the hidden layer
       const x = Math.random() * 2 - 1;
       const y = Math.random() * 2 - 1;
       pts.push({ x, y, label: x > 0 !== y > 0 ? 1 : 0 });
+    } else if (kind === "moons") {
+      // two interleaving half-moons — visibly takes a while to separate
+      const span = Math.floor(n / 2);
+      const k = i < span ? 0 : 1;
+      const tt = (Math.PI * ((i < span ? i : i - span))) / span;
+      let x: number;
+      let y: number;
+      if (k === 0) {
+        x = Math.cos(tt);
+        y = Math.sin(tt);
+      } else {
+        x = 1 - Math.cos(tt);
+        y = 0.4 - Math.sin(tt);
+      }
+      // uniform scale + center so both moons fit inside [-1, 1]
+      pts.push({ x: (x - 0.5) * 0.6 + randn() * 0.04, y: (y - 0.2) * 0.6 + randn() * 0.04, label: k });
+    } else {
+      // spiral — hard but learnable (one gentle turn); the boundary slowly curls in
+      const k = i % 2;
+      const frac = i / 2 / (n / 2);
+      const r = 0.12 + frac * 0.82;
+      const theta = frac * 2 * Math.PI + k * Math.PI;
+      pts.push({ x: r * Math.cos(theta) + randn() * 0.015, y: r * Math.sin(theta) + randn() * 0.015, label: k });
     }
   }
   return pts;

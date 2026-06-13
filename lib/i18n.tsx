@@ -48,6 +48,13 @@ export const S = {
       en: "A real network stacks thousands of these neurons in layers. Training = automatically finding the knob settings that make the outputs correct — which is what you'll watch next.",
       ko: "실제 신경망은 이런 뉴런 수천 개를 층층이 쌓습니다. 학습이란 출력이 맞도록 손잡이 값을 자동으로 찾는 것 — 바로 다음에서 직접 보게 됩니다.",
     },
+    sigTitle: { en: "The squash: the sigmoid σ", ko: "눌러주기: 시그모이드 σ" },
+    sigDesc: {
+      en: "The neuron's last step squashes any number into a 0–1 output using the sigmoid curve. Big negative → near 0, zero → 0.5, big positive → near 1. The dot shows your current weighted sum; press Sweep to watch it slide across.",
+      ko: "뉴런의 마지막 단계는 시그모이드 곡선으로 어떤 숫자든 0~1 출력으로 눌러줍니다. 큰 음수 → 0에 가깝게, 0 → 0.5, 큰 양수 → 1에 가깝게. 점은 현재 가중합을 나타내며, ‘쓸기’를 누르면 곡선을 따라 미끄러집니다.",
+    },
+    sweep: { en: "▶ Sweep", ko: "▶ 쓸기" },
+    sweepStop: { en: "⏸ Stop", ko: "⏸ 정지" },
   },
 
   train: {
@@ -62,9 +69,11 @@ export const S = {
     step: { en: "Step ×20", ko: "20단계" },
     reset: { en: "↻ Reset", ko: "↻ 초기화" },
     dataset: { en: "Dataset", ko: "데이터" },
-    dsBlobs: { en: "Two blobs", ko: "두 무리" },
+    dsBlobs: { en: "Two blobs (easy)", ko: "두 무리 (쉬움)" },
     dsCircle: { en: "Circle", ko: "원" },
-    dsXor: { en: "XOR (tricky)", ko: "XOR (어려움)" },
+    dsXor: { en: "XOR", ko: "XOR" },
+    dsMoons: { en: "Two moons", ko: "반달 두 개" },
+    dsSpiral: { en: "Spiral (hard)", ko: "나선 (어려움)" },
     epoch: { en: "Epoch", ko: "에폭(반복)" },
     loss: { en: "Loss", ko: "손실" },
     acc: { en: "Accuracy", ko: "정확도" },

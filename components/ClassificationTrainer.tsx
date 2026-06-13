@@ -16,7 +16,7 @@ export default function ClassificationTrainer() {
   const dataRef = useRef<Point[]>([]);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rafRef = useRef<number>(0);
-  const [kind, setKind] = useState<DatasetKind>("blobs");
+  const [kind, setKind] = useState<DatasetKind>("moons");
   const [epoch, setEpoch] = useState(0);
   const [loss, setLoss] = useState(0);
   const [acc, setAcc] = useState(0);
@@ -58,8 +58,8 @@ export default function ClassificationTrainer() {
 
   const resetWith = useCallback(
     (k: DatasetKind) => {
-      netRef.current = new MLP(10);
-      dataRef.current = makeDataset(k, 180);
+      netRef.current = new MLP(16);
+      dataRef.current = makeDataset(k, 200);
       setEpoch(0);
       setLoss(0);
       setAcc(0);
@@ -70,7 +70,7 @@ export default function ClassificationTrainer() {
   );
 
   useEffect(() => {
-    resetWith("blobs");
+    resetWith("moons");
   }, [resetWith]);
 
   const runEpochs = useCallback(
@@ -93,7 +93,7 @@ export default function ClassificationTrainer() {
     let stop = false;
     const tick = () => {
       if (stop) return;
-      runEpochs(4);
+      runEpochs(2);
       rafRef.current = requestAnimationFrame(tick);
     };
     rafRef.current = requestAnimationFrame(tick);
@@ -154,7 +154,7 @@ export default function ClassificationTrainer() {
             <div style={{ marginTop: 12 }}>
               <span className="count-unit">{t.dataset[lang]}:</span>
               <div className="btnrow">
-                {([["blobs", t.dsBlobs], ["circle", t.dsCircle], ["xor", t.dsXor]] as const).map(([k, lbl]) => (
+                {([["moons", t.dsMoons], ["spiral", t.dsSpiral], ["xor", t.dsXor], ["circle", t.dsCircle], ["blobs", t.dsBlobs]] as const).map(([k, lbl]) => (
                   <button key={k} className="preset" onClick={() => onDataset(k)} style={kind === k ? { borderColor: "var(--accent)", color: "var(--text)" } : {}}>
                     {lbl[lang]}
                   </button>

@@ -1,9 +1,71 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { S, useLang } from "@/lib/i18n";
 
 const sigmoid = (z: number) => 1 / (1 + Math.exp(-z));
+
+function SigmoidPlot({ sum }: { sum: number }) {
+  const { lang } = useLang();
+  const t = S.nnb;
+  const [sweeping, setSweeping] = useState(false);
+  const [sweepZ, setSweepZ] = useState(-8);
+  const raf = useRef<number>(0);
+  const dir = useRef(1);
+
+  useEffect(() => {
+    if (!sweeping) return;
+    let stop = false;
+    const tick = () => {
+      if (stop) return;
+      setSweepZ((z) => {
+        let nz = z + dir.current * 0.12;
+        if (nz > 8) { nz = 8; dir.current = -1; }
+        if (nz < -8) { nz = -8; dir.current = 1; }
+        return nz;
+      });
+      raf.current = requestAnimationFrame(tick);
+    };
+    raf.current = requestAnimationFrame(tick);
+    return () => { stop = true; cancelAnimationFrame(raf.current); };
+  }, [sweeping]);
+
+  const W = 320;
+  const H = 160;
+  const pad = 20;
+  const zToX = (z: number) => pad + ((z + 8) / 16) * (W - 2 * pad);
+  const sToY = (s: number) => H - pad - s * (H - 2 * pad);
+
+  let curve = "";
+  for (let i = 0; i <= 80; i++) {
+    const z = -8 + (16 * i) / 80;
+    curve += `${zToX(z).toFixed(1)},${sToY(sigmoid(z)).toFixed(1)} `;
+  }
+
+  const ptZ = sweeping ? sweepZ : Math.max(-8, Math.min(8, sum));
+  const ptS = sigmoid(ptZ);
+
+  return (
+    <div className="card" style={{ marginTop: 14 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <h3>{t.sigTitle[lang]}</h3>
+        <button className="preset" onClick={() => setSweeping((s) => !s)}>{sweeping ? t.sweepStop[lang] : t.sweep[lang]}</button>
+      </div>
+      <p className="desc" style={{ margin: "6px 0 10px" }}>{t.sigDesc[lang]}</p>
+      <svg viewBox={`0 0 ${W} ${H}`} style={{ width: "100%", height: "auto", maxWidth: 460 }}>
+        <line x1={pad} y1={sToY(0)} x2={W - pad} y2={sToY(0)} stroke="var(--line)" />
+        <line x1={zToX(0)} y1={pad} x2={zToX(0)} y2={H - pad} stroke="var(--line)" />
+        <line x1={pad} y1={sToY(0.5)} x2={W - pad} y2={sToY(0.5)} stroke="var(--line)" strokeDasharray="2 3" />
+        <text x={pad - 2} y={sToY(1) + 3} fill="var(--muted)" fontSize="9" textAnchor="end">1</text>
+        <text x={pad - 2} y={sToY(0) + 3} fill="var(--muted)" fontSize="9" textAnchor="end">0</text>
+        <polyline points={curve} fill="none" stroke="#7c9cff" strokeWidth={2} />
+        <line x1={zToX(ptZ)} y1={sToY(ptS)} x2={zToX(ptZ)} y2={sToY(0)} stroke="#58e0c8" strokeWidth={1} strokeDasharray="2 2" />
+        <circle cx={zToX(ptZ)} cy={sToY(ptS)} r={5} fill="#58e0c8" />
+        <text x={zToX(ptZ) + 8} y={sToY(ptS) - 6} fill="#e9edff" fontSize="11" fontFamily="monospace">σ({ptZ.toFixed(1)}) = {ptS.toFixed(2)}</text>
+      </svg>
+    </div>
+  );
+}
 
 function Slider({ label, value, min, max, step, onChange }: { label: string; value: number; min: number; max: number; step: number; onChange: (v: number) => void }) {
   return (
@@ -79,6 +141,8 @@ export default function NeuralNetBasics() {
             </div>
           </div>
         </div>
+
+        <SigmoidPlot sum={sum} />
 
         <div className="callout">{t.takeaway[lang]}</div>
       </div>
