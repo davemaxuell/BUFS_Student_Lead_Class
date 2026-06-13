@@ -21,16 +21,36 @@ export default function TokenEmbedding() {
   const [dist, setDist] = useState(0);
   const [playing, setPlaying] = useState(false);
   const [sel, setSel] = useState<number>(0); // default: first token ("king")
+  const [focus, setFocus] = useState<{ i: number; j: number; pPos: number; negs: { n: number; p: number }[] } | null>(null);
   const rafRef = useRef(0);
   const seedRef = useRef(2);
+  const pairIdxRef = useRef(0);
 
   const snapshot = () => setCoords(model.vec.map((r) => [...r]));
 
   const runEpochs = (n: number) => {
+    setFocus(null);
     let d = dist;
-    for (let i = 0; i < n; i++) d = model.trainEpoch(0.02, 4);
+    for (let i = 0; i < n; i++) d = model.trainEpoch(0.5, 4);
     setEpoch((e) => e + n);
     setDist(d);
+    snapshot();
+  };
+
+  // One co-occurring pair, with the pull/push forces drawn out.
+  const stepPair = () => {
+    setPlaying(false);
+    const p = model.pairs[pairIdxRef.current % model.pairs.length];
+    pairIdxRef.current++;
+    const negs: number[] = [];
+    let guard = 0;
+    while (negs.length < 3 && guard++ < 50) {
+      const n = (Math.random() * model.V) | 0;
+      if (n !== p[0] && n !== p[1] && !negs.includes(n)) negs.push(n);
+    }
+    const info = model.trainPair(p[0], p[1], negs, 0.8);
+    setFocus({ i: p[0], j: p[1], pPos: info.pPos, negs: info.negs });
+    setSel(p[0]);
     snapshot();
   };
   const runRef = useRef(runEpochs);
@@ -53,6 +73,8 @@ export default function TokenEmbedding() {
 
   const reset = () => {
     setPlaying(false);
+    setFocus(null);
+    pairIdxRef.current = 0;
     seedRef.current += 1;
     model.reset(seedRef.current);
     setEpoch(0);
@@ -101,7 +123,8 @@ export default function TokenEmbedding() {
         </div>
 
         <div className="btnrow" style={{ marginTop: 14 }}>
-          <button className="lang-btn" onClick={() => setPlaying((p) => !p)}>{playing ? t.pause[lang] : t.play[lang]}</button>
+          <button className="lang-btn" onClick={() => { setFocus(null); setPlaying((p) => !p); }}>{playing ? t.pause[lang] : t.play[lang]}</button>
+          <button className="preset" onClick={stepPair}>{t.onePair[lang]}</button>
           <button className="preset" onClick={() => { setPlaying(false); runEpochs(15); }}>{t.step[lang]}</button>
           <button className="preset" onClick={reset}>{t.reset[lang]}</button>
           <span className="count-unit" style={{ alignSelf: "center" }}>
@@ -111,31 +134,95 @@ export default function TokenEmbedding() {
 
         <div className="callout">{narration}</div>
 
+        {focus && (
+          <div className="card" style={{ marginTop: 12 }}>
+            <div className="label">{t.stepTitle[lang]}</div>
+            <div className="note" style={{ marginTop: 0, marginBottom: 8 }}>{t.stepTask[lang]}</div>
+            <table style={{ width: "100%", fontSize: ".88rem", fontVariantNumeric: "tabular-nums" }}>
+              <thead>
+                <tr>
+                  <th>{t.thPair[lang]}</th>
+                  <th style={{ textAlign: "right" }}>{t.thTruth[lang]}</th>
+                  <th style={{ textAlign: "right" }}>{t.thPred[lang]}</th>
+                  <th style={{ textAlign: "right" }}>{t.thErr[lang]}</th>
+                  <th style={{ textAlign: "right" }}>{t.thAction[lang]}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style={{ color: "#e9edff" }}>{model.words[focus.i]} &amp; {model.words[focus.j]}</td>
+                  <td style={{ textAlign: "right" }}>1</td>
+                  <td style={{ textAlign: "right" }}>{(focus.pPos * 100).toFixed(0)}%</td>
+                  <td style={{ textAlign: "right", color: "#ffb454" }}>{(1 - focus.pPos).toFixed(2)}</td>
+                  <td style={{ textAlign: "right", color: "#5fe08a", fontWeight: 700 }}>↓ {t.pull[lang]}</td>
+                </tr>
+                {focus.negs.map(({ n, p }) => (
+                  <tr key={n}>
+                    <td style={{ color: "#aab4dd" }}>{model.words[focus.i]} &amp; {model.words[n]}</td>
+                    <td style={{ textAlign: "right" }}>0</td>
+                    <td style={{ textAlign: "right" }}>{(p * 100).toFixed(0)}%</td>
+                    <td style={{ textAlign: "right", color: "#ffb454" }}>{p.toFixed(2)}</td>
+                    <td style={{ textAlign: "right", color: "#ff7a90", fontWeight: 700 }}>↑ {t.push[lang]}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
         <div className="grid2" style={{ marginTop: 14, alignItems: "start" }}>
           <div className="card">
             <div className="label">{t.plotTitle[lang]}</div>
             <svg viewBox={`0 0 ${W} ${H}`} style={{ width: "100%", height: "auto", borderRadius: 10, border: "1px solid var(--line)", background: "#0d1430" }}>
-              {sel !== null &&
+              <defs>
+                <marker id="arrPull" markerWidth="7" markerHeight="7" refX="5.5" refY="3" orient="auto">
+                  <path d="M0,0 L6,3 L0,6 Z" fill="#5fe08a" />
+                </marker>
+                <marker id="arrPush" markerWidth="7" markerHeight="7" refX="5.5" refY="3" orient="auto">
+                  <path d="M0,0 L6,3 L0,6 Z" fill="#ff7a90" />
+                </marker>
+              </defs>
+
+              {/* training forces for the focused pair */}
+              {focus &&
+                focus.negs.map(({ n }) => (
+                  <line key={"push" + n} x1={pts[focus.i].sx} y1={pts[focus.i].sy} x2={pts[n].sx} y2={pts[n].sy} stroke="#ff7a90" strokeWidth={1.4} strokeDasharray="4 3" markerEnd="url(#arrPush)" opacity={0.8} />
+                ))}
+              {focus && (
+                <line x1={pts[focus.i].sx} y1={pts[focus.i].sy} x2={pts[focus.j].sx} y2={pts[focus.j].sy} stroke="#5fe08a" strokeWidth={2.4} markerStart="url(#arrPull)" markerEnd="url(#arrPull)" />
+              )}
+
+              {/* nearest-neighbor hints (only when not showing a training step) */}
+              {!focus &&
+                sel !== null &&
                 neighbors.map((n) => {
                   const a = pts[sel];
                   const b = pts[n.j];
                   return <line key={n.j} x1={a.sx} y1={a.sy} x2={b.sx} y2={b.sy} stroke="#58e0c8" strokeWidth={1} strokeDasharray="3 3" />;
                 })}
               {pts.map((p) => {
+                const pulled = focus ? focus.i === p.i || focus.j === p.i : false;
+                const pushed = focus ? focus.negs.some((o) => o.n === p.i) : false;
                 const active = sel === p.i;
                 const nb = nbSet.has(p.i);
+                const ring = pulled ? "#5fe08a" : pushed ? "#ff7a90" : active ? "#fff" : "none";
+                const lit = focus ? pulled || pushed : sel === null || active || nb;
                 const col = COLORS[model.group[p.i]];
-                const op = sel === null || active || nb ? 1 : 0.55;
+                const op = lit ? 1 : focus ? 0.3 : 0.55;
                 return (
                   <g key={p.i} onClick={() => setSel(p.i)} style={{ cursor: "pointer" }} opacity={op}>
-                    <circle cx={p.sx} cy={p.sy} r={active ? 7 : 5} fill={col} stroke={active ? "#fff" : "none"} strokeWidth={active ? 2 : 0} />
-                    <text x={p.sx + 8} y={p.sy + 4} fontSize={12} fontWeight={active || nb ? 700 : 500} fill={active || nb ? "#e9edff" : "#aab4dd"}>
+                    <circle cx={p.sx} cy={p.sy} r={pulled || pushed || active ? 7 : 5} fill={col} stroke={ring} strokeWidth={ring === "none" ? 0 : 2.4} />
+                    <text x={p.sx + 8} y={p.sy + 4} fontSize={12} fontWeight={lit ? 700 : 500} fill={lit ? "#e9edff" : "#aab4dd"}>
                       {model.words[p.i]}
                     </text>
                   </g>
                 );
               })}
             </svg>
+            <div style={{ display: "flex", gap: 16, marginTop: 8, fontSize: ".8rem", flexWrap: "wrap" }}>
+              <span><span style={{ display: "inline-block", width: 14, height: 0, borderTop: "3px solid #5fe08a", verticalAlign: "middle", marginRight: 5 }} />{t.legendPull[lang]}</span>
+              <span><span style={{ display: "inline-block", width: 14, height: 0, borderTop: "3px dashed #ff7a90", verticalAlign: "middle", marginRight: 5 }} />{t.legendPush[lang]}</span>
+            </div>
             <div className="note">{t.plotNote[lang]}</div>
           </div>
 
@@ -164,6 +251,8 @@ export default function TokenEmbedding() {
             {neighbors.map((n) => model.words[n.j]).join(", ")}
           </div>
         )}
+
+        <div className="callout" style={{ borderLeftColor: "var(--accent2)" }}>{t.encoderBridge[lang]}</div>
       </div>
     </section>
   );

@@ -89,48 +89,75 @@ export class EmbModel {
     this.vec = this.words.map(() => [(rnd() - 0.5) * 0.6, (rnd() - 0.5) * 0.6]);
   }
 
-  /** One training epoch: attract every co-occurring pair, repel random pairs.
-   *  Returns the average distance within co-occurring pairs (it should fall). */
-  trainEpoch(lr = 0.02, negK = 4): number {
+  // The model's PREDICTION that two tokens are related: high when they're close.
+  // p = σ(2 − distance). This is a real probabilistic objective, not just a layout.
+  relatedness(i: number, j: number): number {
+    const d = Math.hypot(this.vec[i][0] - this.vec[j][0], this.vec[i][1] - this.vec[j][1]);
+    return 1 / (1 + Math.exp(d - 2));
+  }
+
+  // Move i and j together (sign +1) or apart (sign −1) by an amount scaled by g.
+  private nudge(i: number, j: number, g: number, sign: number) {
     const v = this.vec;
-    for (const [i, j] of this.pairs) {
-      // attract i and j toward each other
-      const dx = v[j][0] - v[i][0];
-      const dy = v[j][1] - v[i][1];
-      v[i][0] += lr * dx;
-      v[i][1] += lr * dy;
-      v[j][0] -= lr * dx;
-      v[j][1] -= lr * dy;
-      // repel against a few random (likely unrelated) words
-      for (let k = 0; k < negK; k++) {
-        const n = (Math.random() * this.V) | 0;
-        if (n === i || n === j) continue;
-        const rx = v[i][0] - v[n][0];
-        const ry = v[i][1] - v[n][1];
-        const d2 = rx * rx + ry * ry + 0.05;
-        const f = (lr * 0.5) / d2;
-        v[i][0] += f * rx;
-        v[i][1] += f * ry;
-        v[n][0] -= f * rx;
-        v[n][1] -= f * ry;
-      }
-    }
-    // recenter so the cloud doesn't drift off screen
+    const dx = v[j][0] - v[i][0];
+    const dy = v[j][1] - v[i][1];
+    v[i][0] += sign * g * dx;
+    v[i][1] += sign * g * dy;
+    v[j][0] -= sign * g * dx;
+    v[j][1] -= sign * g * dy;
+  }
+
+  private recenter() {
     let mx = 0;
     let my = 0;
-    for (const p of v) {
+    for (const p of this.vec) {
       mx += p[0];
       my += p[1];
     }
     mx /= this.V;
     my /= this.V;
-    for (const p of v) {
+    for (const p of this.vec) {
       p[0] -= mx;
       p[1] -= my;
     }
-    let s = 0;
-    for (const [i, j] of this.pairs) s += Math.hypot(v[i][0] - v[j][0], v[i][1] - v[j][1]);
-    return s / this.pairs.length;
+  }
+
+  /** One epoch. For each co-occurring pair the model predicts relatedness, and
+   *  the ERROR (target − prediction) scales how far it pulls/pushes. Returns the
+   *  average error (the model's "loss" — it should fall toward 0). */
+  trainEpoch(lr = 0.5, negK = 4): number {
+    let lossSum = 0;
+    let count = 0;
+    for (const [i, j] of this.pairs) {
+      const p = this.relatedness(i, j); // target 1 (they co-occur)
+      const err = 1 - p;
+      this.nudge(i, j, lr * err, +1); // pull together, harder when more wrong
+      lossSum += err;
+      count++;
+      for (let k = 0; k < negK; k++) {
+        const n = (Math.random() * this.V) | 0;
+        if (n === i || n === j) continue;
+        const pn = this.relatedness(i, n); // target 0 (random)
+        this.nudge(i, n, lr * pn, -1); // push apart, harder when wrongly close
+        lossSum += pn;
+        count++;
+      }
+    }
+    this.recenter();
+    return lossSum / Math.max(count, 1);
+  }
+
+  /** Train a SINGLE co-occurring pair against given negatives, returning the
+   *  prediction details so the UI can show the predict→error→update loop. */
+  trainPair(i: number, j: number, negs: number[], lr = 0.8): { pPos: number; negs: { n: number; p: number }[] } {
+    const pPos = this.relatedness(i, j);
+    const negInfo = negs.map((n) => ({ n, p: this.relatedness(i, n) }));
+    this.nudge(i, j, lr * (1 - pPos), +1);
+    for (const { n, p } of negInfo) {
+      if (n === i || n === j) continue;
+      this.nudge(i, n, lr * p, -1);
+    }
+    return { pPos, negs: negInfo };
   }
 
   nearest(i: number, k = 3): { j: number; d: number }[] {
