@@ -200,6 +200,7 @@ export const S = {
     pause: { en: "⏸ Pause", ko: "⏸ 일시정지" },
     step: { en: "Merge once", ko: "한 번 병합" },
     reset: { en: "↻ Reset", ko: "↻ 초기화" },
+    trainingSet: { en: "Training set", ko: "학습 세트" },
     corpus: { en: "Training corpus (word × frequency)", ko: "학습 말뭉치 (단어 × 빈도)" },
     merges: { en: "Merges learned (in order)", ko: "학습한 병합 규칙 (순서대로)" },
     vocab: { en: "Vocabulary size", ko: "어휘집 크기" },

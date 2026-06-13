@@ -5,32 +5,63 @@ import { S, useLang } from "@/lib/i18n";
 import { initBPE, bpeStep, applyMerges, BPEState } from "@/lib/bpe";
 import { chipStyle } from "@/lib/chip";
 
-const CORPUS = [
-  { word: "low", freq: 7 },
-  { word: "lower", freq: 5 },
-  { word: "lowest", freq: 3 },
-  { word: "slow", freq: 4 },
-  { word: "slower", freq: 3 },
-  { word: "new", freq: 6 },
-  { word: "newer", freq: 6 },
-  { word: "newest", freq: 4 },
-  { word: "wide", freq: 3 },
-  { word: "wider", freq: 3 },
-  { word: "widest", freq: 2 },
-];
-
 // Real BPE stops at a chosen vocabulary budget — a fixed number of merge rules.
 // Without one, a tiny corpus would merge every word into a single whole token
 // (memorizing the dictionary), which defeats the purpose of SUBWORD pieces.
 const MERGE_BUDGET = 10;
 
+// Two training sets students can switch between. Each "tries" list mixes clean
+// builds from learned pieces, a partial build, and an unseen Korean word that
+// falls back to single characters (the token tax).
+const CORPORA = [
+  {
+    key: "endings",
+    label: { en: "Set A · endings (-er / -est)", ko: "세트 A · 어미 (-er / -est)" },
+    corpus: [
+      { word: "low", freq: 7 },
+      { word: "lower", freq: 5 },
+      { word: "lowest", freq: 3 },
+      { word: "slow", freq: 4 },
+      { word: "slower", freq: 3 },
+      { word: "new", freq: 6 },
+      { word: "newer", freq: 6 },
+      { word: "newest", freq: 4 },
+      { word: "wide", freq: 3 },
+      { word: "wider", freq: 3 },
+      { word: "widest", freq: 2 },
+    ],
+    tries: ["slowest", "lowest", "newest", "slower", "wider", "fastest", "highest", "학교"],
+  },
+  {
+    key: "verbs",
+    label: { en: "Set B · verbs (-ing / -ed)", ko: "세트 B · 동사 (-ing / -ed)" },
+    corpus: [
+      { word: "play", freq: 6 },
+      { word: "playing", freq: 5 },
+      { word: "played", freq: 4 },
+      { word: "player", freq: 3 },
+      { word: "walk", freq: 5 },
+      { word: "walking", freq: 4 },
+      { word: "walked", freq: 3 },
+      { word: "talk", freq: 4 },
+      { word: "talking", freq: 3 },
+      { word: "talked", freq: 3 },
+      { word: "jump", freq: 4 },
+      { word: "jumping", freq: 3 },
+    ],
+    tries: ["walking", "talked", "player", "jumped", "running", "playest", "학교"],
+  },
+] as const;
+
 export default function BPETrainer() {
   const { lang } = useLang();
   const t = S.bpetrain;
-  const [st, setSt] = useState<BPEState>(() => initBPE(CORPUS));
+  const [cix, setCix] = useState(0);
+  const active = CORPORA[cix];
+  const [st, setSt] = useState<BPEState>(() => initBPE(CORPORA[0].corpus.slice()));
   const [playing, setPlaying] = useState(false);
   const [done, setDone] = useState(false);
-  const [testWord, setTestWord] = useState("slowest");
+  const [testWord, setTestWord] = useState<string>(CORPORA[0].tries[0]);
   const stRef = useRef(st);
   useEffect(() => {
     stRef.current = st;
@@ -67,7 +98,15 @@ export default function BPETrainer() {
   const reset = () => {
     setPlaying(false);
     setDone(false);
-    setSt(initBPE(CORPUS));
+    setSt(initBPE(active.corpus.slice()));
+  };
+
+  const switchCorpus = (i: number) => {
+    setPlaying(false);
+    setDone(false);
+    setCix(i);
+    setSt(initBPE(CORPORA[i].corpus.slice()));
+    setTestWord(CORPORA[i].tries[0]);
   };
 
   const last = st.merges[st.merges.length - 1];
@@ -88,7 +127,18 @@ export default function BPETrainer() {
         <h2>{t.title[lang]}</h2>
         <p className="lead">{t.intro[lang]}</p>
 
-        <div className="btnrow" style={{ marginTop: 14 }}>
+        <div style={{ marginTop: 14 }}>
+          <span className="count-unit">{t.trainingSet[lang]}:</span>
+          <div className="btnrow">
+            {CORPORA.map((c, i) => (
+              <button key={c.key} className="preset" onClick={() => switchCorpus(i)} style={cix === i ? { borderColor: "var(--accent)", color: "var(--text)" } : {}}>
+                {c.label[lang]}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="btnrow" style={{ marginTop: 12 }}>
           <button className="lang-btn" onClick={() => setPlaying((p) => !p)} disabled={done}>
             {playing ? t.pause[lang] : t.play[lang]}
           </button>
@@ -131,6 +181,13 @@ export default function BPETrainer() {
         {/* Test on a new word */}
         <div className="card" style={{ marginTop: 14 }}>
           <label className="label">{t.tryLabel[lang]}</label>
+          <div className="btnrow" style={{ marginTop: 6, marginBottom: 8 }}>
+            {active.tries.map((w) => (
+              <button key={w} className="preset" onClick={() => setTestWord(w)} style={testWord === w ? { borderColor: "var(--accent)", color: "var(--text)" } : {}}>
+                {w}
+              </button>
+            ))}
+          </div>
           <input type="text" value={testWord} onChange={(e) => setTestWord(e.target.value)} />
           <div className="chips" style={{ marginTop: 10 }}>
             {testPieces.map((p, i) => (
