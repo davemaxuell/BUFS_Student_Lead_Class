@@ -54,8 +54,13 @@ export default function BackpropSequence() {
   const [phase, setPhase] = useState(0);
   const [iter, setIter] = useState(0);
   const [playing, setPlaying] = useState(false);
+  const [racing, setRacing] = useState(false); // repeat full cycle until least loss
+  const [converged, setConverged] = useState(false);
+  const [lossHist, setLossHist] = useState<number[]>([]);
 
   const a = useMemo(() => computeAll(params), [params]);
+  const paramsRef = useRef(params);
+  paramsRef.current = params;
 
   const next = () => {
     if (phase < 6) {
@@ -63,10 +68,12 @@ export default function BackpropSequence() {
       return;
     }
     setParams(applyUpdate(params, a));
+    setLossHist((h) => [...h.slice(-119), a.loss]);
     setIter(iter + 1);
     setPhase(1);
   };
 
+  // single-step walkthrough (every 1.5s, phase by phase)
   const nextRef = useRef(next);
   nextRef.current = next;
   useEffect(() => {
@@ -75,8 +82,45 @@ export default function BackpropSequence() {
     return () => clearInterval(id);
   }, [playing]);
 
+  // "Repeat to min loss": run the whole forward→backprop→update cycle over and
+  // over, fast, until the loss bottoms out — then stop on its own.
+  useEffect(() => {
+    if (!racing) return;
+    let prev = Infinity;
+    const id = setInterval(() => {
+      const p = paramsRef.current;
+      const g = computeAll(p);
+      setLossHist((h) => [...h.slice(-119), g.loss]);
+      if (g.loss < 5e-4 || Math.abs(prev - g.loss) < 1e-7) {
+        setRacing(false);
+        setConverged(true);
+        setPhase(6);
+        return;
+      }
+      prev = g.loss;
+      setParams(applyUpdate(p, g));
+      setIter((it) => it + 1);
+      setPhase(6);
+    }, 110);
+    return () => clearInterval(id);
+  }, [racing]);
+
+  const toggleRace = () => {
+    if (racing) {
+      setRacing(false);
+      return;
+    }
+    setPlaying(false);
+    setConverged(false);
+    setPhase(6);
+    setRacing(true);
+  };
+
   const reset = () => {
     setPlaying(false);
+    setRacing(false);
+    setConverged(false);
+    setLossHist([]);
     setParams(freshParams(true));
     setIter(0);
     setPhase(0);
@@ -125,6 +169,16 @@ export default function BackpropSequence() {
   else if (phase === 2) calcLine = `h₁ = σ( ${f2(params.W1[1][0])}×${EX.x[0]} + ${f2(params.W1[1][1])}×${EX.x[1]} + ${f2(params.b1[1])} ) = σ(${f2(a.z1[1])}) = ${f2(a.a1[1])}`;
   else if (phase === 3) calcLine = `ŷ = σ( ${f2(params.W2[0])}×${f2(a.a1[0])} + ${f2(params.W2[1])}×${f2(a.a1[1])} + ${f2(params.b2)} ) = σ(${f2(a.z2)}) = ${f2(a.yhat)}`;
 
+  const lossSpark = (() => {
+    if (lossHist.length < 2) return "";
+    const max = Math.max(...lossHist);
+    const min = Math.min(...lossHist);
+    const range = max - min || 1;
+    const w = 300;
+    const h = 46;
+    return lossHist.map((v, i) => `${(i / (lossHist.length - 1)) * w},${(h - 2) - ((v - min) / range) * (h - 4)}`).join(" ");
+  })();
+
   const rows = [
     { l: "W₁ x₀→h₀", v: params.W1[0][0], g: a.gW1[0][0] },
     { l: "W₁ x₁→h₀", v: params.W1[0][1], g: a.gW1[0][1] },
@@ -145,15 +199,16 @@ export default function BackpropSequence() {
         <p className="lead">{t.intro[lang]}</p>
 
         <div className="btnrow" style={{ marginTop: 14 }}>
-          <button className="lang-btn" onClick={next}>{t.next[lang]}</button>
-          <button className="preset" onClick={() => setPlaying((p) => !p)}>{playing ? t.pause[lang] : t.play[lang]}</button>
+          <button className="lang-btn" onClick={next} disabled={racing}>{t.next[lang]}</button>
+          <button className="preset" onClick={() => setPlaying((p) => !p)} disabled={racing}>{playing ? t.pause[lang] : t.play[lang]}</button>
+          <button className="preset" onClick={toggleRace} style={racing ? { borderColor: "var(--accent)", color: "var(--text)" } : {}}>{racing ? t.stopRun[lang] : t.runMin[lang]}</button>
           <button className="preset" onClick={reset}>{t.reset[lang]}</button>
           <span className="count-unit" style={{ alignSelf: "center" }}>
             {t.iter[lang]} {iter} · <b style={{ color: "var(--accent2)" }}>{phaseName}</b> · {t.lr[lang]} {LR}
           </span>
         </div>
 
-        <div className="callout">{narration}</div>
+        <div className="callout">{converged ? t.converged[lang] : racing ? t.racing[lang] : narration}</div>
 
         {fwd && (
           <div className="callout" style={{ borderLeftColor: "#aec2ff" }}>
@@ -192,9 +247,17 @@ export default function BackpropSequence() {
             </svg>
             <div className="grid3" style={{ marginTop: 8 }}>
               <div><div className="count-unit">{t.target[lang]}</div><b>{EX.t}</b></div>
-              <div><div className="count-unit">{t.pred[lang]}</div><b>{phase >= 3 ? a.yhat.toFixed(3) : "—"}</b></div>
-              <div><div className="count-unit">{t.loss[lang]}</div><b style={{ color: "#ffb454" }}>{phase >= 4 ? a.loss.toFixed(4) : "—"}</b></div>
+              <div><div className="count-unit">{t.pred[lang]}</div><b>{phase >= 3 || racing || converged ? a.yhat.toFixed(3) : "—"}</b></div>
+              <div><div className="count-unit">{t.loss[lang]}</div><b style={{ color: converged ? "#5fe08a" : "#ffb454" }}>{phase >= 4 || racing || converged ? a.loss.toFixed(4) : "—"}</b></div>
             </div>
+            {lossHist.length > 1 && (
+              <div style={{ marginTop: 12 }}>
+                <div className="count-unit" style={{ marginBottom: 2 }}>{t.lossCurve[lang]}</div>
+                <svg viewBox="0 0 300 46" style={{ width: "100%", height: 48 }} preserveAspectRatio="none">
+                  <polyline points={lossSpark} fill="none" stroke={converged ? "#5fe08a" : "#ffb454"} strokeWidth={1.6} />
+                </svg>
+              </div>
+            )}
           </div>
 
           <div className="card">
