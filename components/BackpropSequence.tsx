@@ -96,9 +96,9 @@ export default function BackpropSequence() {
 
   const node = (cx: number, cy: number, label: string, val: string, stroke: string) => (
     <g>
-      <circle cx={cx} cy={cy} r={19} fill="#161e3d" stroke={stroke} strokeWidth={1.5} />
-      <text x={cx} y={cy - 1} textAnchor="middle" fill="#e9edff" fontSize="12" fontFamily="monospace">{val}</text>
-      <text x={cx} y={cy + 30} textAnchor="middle" fill="var(--muted)" fontSize="9">{label}</text>
+      <circle cx={cx} cy={cy} r={20} fill="#161e3d" stroke={stroke} strokeWidth={1.5} />
+      <text x={cx} y={cy + 1} textAnchor="middle" dominantBaseline="middle" fill="#ffffff" fontSize="14" fontWeight={700} fontFamily="ui-monospace, 'SF Mono', Menlo, monospace" style={{ fontVariantNumeric: "tabular-nums" }}>{val}</text>
+      <text x={cx} y={cy + 33} textAnchor="middle" fill="#aeb8e0" fontSize="11" fontWeight={600}>{label}</text>
     </g>
   );
 
@@ -139,9 +139,12 @@ export default function BackpropSequence() {
                 <g key={i}>
                   <line x1={e.x1} y1={e.y1} x2={e.x2} y2={e.y2} stroke={edgeColor} strokeWidth={1.6} />
                   {phase >= 1 && (
-                    <text x={(e.x1 + e.x2) / 2} y={(e.y1 + e.y2) / 2 - 2} textAnchor="middle" fill="var(--muted)" fontSize="8" fontFamily="monospace">
-                      {e.w.toFixed(2)}
-                    </text>
+                    <g>
+                      <rect x={(e.x1 + e.x2) / 2 - 15} y={(e.y1 + e.y2) / 2 - 12} width={30} height={14} rx={3} fill="#0b1230" opacity={0.85} />
+                      <text x={(e.x1 + e.x2) / 2} y={(e.y1 + e.y2) / 2 - 1} textAnchor="middle" fill="#dfe6ff" fontSize="10.5" fontWeight={600} fontFamily="ui-monospace, 'SF Mono', Menlo, monospace" style={{ fontVariantNumeric: "tabular-nums" }}>
+                        {e.w.toFixed(2)}
+                      </text>
+                    </g>
                   )}
                 </g>
               ))}
@@ -159,7 +162,7 @@ export default function BackpropSequence() {
           </div>
 
           <div className="card">
-            <table style={{ fontFamily: "ui-monospace, monospace", fontSize: ".82rem" }}>
+            <table style={{ fontFamily: "ui-monospace, 'SF Mono', Menlo, monospace", fontSize: ".95rem", fontVariantNumeric: "tabular-nums" }}>
               <thead>
                 <tr>
                   <th>{t.colWeight[lang]}</th>
@@ -174,9 +177,9 @@ export default function BackpropSequence() {
                   return (
                     <tr key={r.l}>
                       <td>{r.l}</td>
-                      <td style={{ textAlign: "right" }}>{r.v.toFixed(2)}</td>
-                      <td style={{ textAlign: "right", color: phase >= 3 ? "#ffb454" : "var(--muted)" }}>{phase >= 3 ? r.g.toFixed(3) : "—"}</td>
-                      <td style={{ textAlign: "right", color: phase === 4 ? "#5fe08a" : "var(--muted)", fontWeight: phase === 4 ? 700 : 400 }}>
+                      <td style={{ textAlign: "right", color: "#e9edff", fontWeight: 600 }}>{r.v.toFixed(2)}</td>
+                      <td style={{ textAlign: "right", color: phase >= 3 ? "#ffc777" : "var(--muted)", fontWeight: phase >= 3 ? 600 : 400 }}>{phase >= 3 ? r.g.toFixed(3) : "—"}</td>
+                      <td style={{ textAlign: "right", color: phase === 4 ? "#74e89a" : "var(--muted)", fontWeight: phase === 4 ? 700 : 400 }}>
                         {phase === 4 ? nv.toFixed(2) : "—"}
                       </td>
                     </tr>
