@@ -36,10 +36,10 @@ export default function Page() {
         <NeuralNetBasics />
         <ClassificationTrainer />
         <BackpropSequence />
+        <BPETrainer />
         <MLMDemo />
         <EmbeddingViz />
         <Embed3D />
-        <BPETrainer />
         <TokenTaxHero />
         <TokenizationComparison />
         <RealTokenizers />

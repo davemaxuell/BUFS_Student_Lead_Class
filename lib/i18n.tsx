@@ -137,8 +137,8 @@ export const S = {
     eyebrow: { en: "HOW THE ENCODER TRAINS", ko: "인코더는 이렇게 학습한다" },
     title: { en: "Masked Language Modeling — fill in the blank", ko: "마스크 언어 모델링 — 빈칸 채우기" },
     intro: {
-      en: "This is how modern text encoders (BERT, RoBERTa, XLM-R) actually learn — with no human labels. Hide a word with [MASK] and the model must predict it from context. Repeat over billions of sentences and it absorbs grammar, facts, and meaning. Below is a REAL multilingual BERT predicting live in your browser.",
-      ko: "최신 텍스트 인코더(BERT, RoBERTa, XLM-R)가 실제로 학습하는 방식 — 사람이 만든 라벨 없이. 단어를 [MASK]로 가리면 모델이 문맥으로 그 단어를 예측해야 합니다. 수십억 문장에 반복하면 문법·사실·의미를 흡수합니다. 아래는 브라우저에서 실시간으로 예측하는 진짜 다국어 BERT입니다.",
+      en: "Once the tokenizer above has split text into pieces, the encoder learns what those pieces MEAN. This is how modern text encoders (BERT, RoBERTa, XLM-R) actually learn — with no human labels. Hide a word with [MASK] and the model must predict it from context. Repeat over billions of sentences and it absorbs grammar, facts, and meaning. Below is a REAL multilingual BERT predicting live in your browser.",
+      ko: "위 토크나이저가 텍스트를 조각으로 나눈 뒤, 인코더는 그 조각들이 무엇을 의미하는지 학습합니다. 최신 텍스트 인코더(BERT, RoBERTa, XLM-R)가 실제로 학습하는 방식 — 사람이 만든 라벨 없이. 단어를 [MASK]로 가리면 모델이 문맥으로 그 단어를 예측해야 합니다. 수십억 문장에 반복하면 문법·사실·의미를 흡수합니다. 아래는 브라우저에서 실시간으로 예측하는 진짜 다국어 BERT입니다.",
     },
     loadBtn: { en: "▶ Load the real BERT (downloads weights once)", ko: "▶ 진짜 BERT 불러오기 (가중치 최초 1회 다운로드)" },
     loading: { en: "Downloading BERT… (bigger than the tokenizers — a moment)", ko: "BERT 내려받는 중… (토크나이저보다 큼 — 잠시만요)" },
