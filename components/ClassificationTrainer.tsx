@@ -78,7 +78,7 @@ export default function ClassificationTrainer() {
       const net = netRef.current;
       if (!net) return;
       let l = 0;
-      for (let i = 0; i < n; i++) l = net.trainEpoch(dataRef.current, 0.6);
+      for (let i = 0; i < n; i++) l = net.trainEpoch(dataRef.current, 0.5, 0.9);
       setEpoch((e) => e + n);
       setLoss(l);
       setAcc(net.accuracy(dataRef.current));

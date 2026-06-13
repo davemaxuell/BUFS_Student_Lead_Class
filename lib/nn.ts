@@ -65,6 +65,11 @@ export class MLP {
   b1: number[] = [];
   W2: number[] = [];
   b2 = 0;
+  // momentum velocity buffers — these turn a slow crawl into a clean, decisive boundary
+  vW1: number[][] = [];
+  vb1: number[] = [];
+  vW2: number[] = [];
+  vb2 = 0;
 
   constructor(H = 10) {
     this.H = H;
@@ -76,6 +81,10 @@ export class MLP {
     this.b1 = Array.from({ length: this.H }, () => 0);
     this.W2 = Array.from({ length: this.H }, () => randn() * 0.9);
     this.b2 = 0;
+    this.vW1 = Array.from({ length: this.H }, () => [0, 0]);
+    this.vb1 = Array.from({ length: this.H }, () => 0);
+    this.vW2 = Array.from({ length: this.H }, () => 0);
+    this.vb2 = 0;
   }
 
   forward(x0: number, x1: number): { a1: number[]; y: number } {
@@ -92,8 +101,8 @@ export class MLP {
     return this.forward(x0, x1).y;
   }
 
-  /** One full-batch gradient-descent epoch. Returns the binary cross-entropy loss. */
-  trainEpoch(data: Point[], lr = 0.6): number {
+  /** One full-batch gradient-descent epoch with momentum. Returns the binary cross-entropy loss. */
+  trainEpoch(data: Point[], lr = 0.5, momentum = 0.9): number {
     const H = this.H;
     const gW1 = Array.from({ length: H }, () => [0, 0]);
     const gb1 = new Array<number>(H).fill(0);
@@ -118,12 +127,17 @@ export class MLP {
 
     const s = lr / data.length;
     for (let j = 0; j < H; j++) {
-      this.W2[j] -= s * gW2[j];
-      this.W1[j][0] -= s * gW1[j][0];
-      this.W1[j][1] -= s * gW1[j][1];
-      this.b1[j] -= s * gb1[j];
+      this.vW2[j] = momentum * this.vW2[j] - s * gW2[j];
+      this.W2[j] += this.vW2[j];
+      this.vW1[j][0] = momentum * this.vW1[j][0] - s * gW1[j][0];
+      this.W1[j][0] += this.vW1[j][0];
+      this.vW1[j][1] = momentum * this.vW1[j][1] - s * gW1[j][1];
+      this.W1[j][1] += this.vW1[j][1];
+      this.vb1[j] = momentum * this.vb1[j] - s * gb1[j];
+      this.b1[j] += this.vb1[j];
     }
-    this.b2 -= s * gb2;
+    this.vb2 = momentum * this.vb2 - s * gb2;
+    this.b2 += this.vb2;
     return loss / data.length;
   }
 
