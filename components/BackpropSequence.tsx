@@ -221,7 +221,7 @@ export default function BackpropSequence() {
 
         <div className="grid2" style={{ marginTop: 14, alignItems: "start" }}>
           <div className="card">
-            <svg viewBox="0 0 340 200" style={{ width: "100%", height: "auto" }}>
+            <svg viewBox="0 0 392 200" style={{ width: "100%", height: "auto" }}>
               {edges.map((e, i) => {
                 const es = edgeStyle(e.to);
                 const lit = (fwd && e.to === activeNode) || (!fwd && phase >= 4);
@@ -244,6 +244,14 @@ export default function BackpropSequence() {
               {node(170, 55, "h₀", phase >= 1 ? a.a1[0].toFixed(2) : "?", phase >= 1 ? "#7c9cff" : "var(--line)", phase === 1)}
               {node(170, 145, "h₁", phase >= 2 ? a.a1[1].toFixed(2) : "?", phase >= 2 ? "#7c9cff" : "var(--line)", phase === 2)}
               {node(302, 100, "ŷ", phase >= 3 ? a.yhat.toFixed(2) : "?", phase >= 3 ? "#58e0c8" : "var(--line)", phase === 3)}
+              {/* the target value ŷ is compared against (the goal) */}
+              <line x1={322} y1={100} x2={350} y2={100} stroke={phase >= 4 ? "#ffb454" : "var(--line)"} strokeWidth={1.4} strokeDasharray="3 3" />
+              <rect x={350} y={84} width={34} height={32} rx={7} fill="#0b1230" stroke="#5fe08a" strokeWidth={1.8} />
+              <text x={367} y={101} textAnchor="middle" dominantBaseline="middle" fill="#ffffff" fontSize="15" fontWeight={700} fontFamily="ui-monospace, 'SF Mono', Menlo, monospace">{EX.t}</text>
+              <text x={367} y={130} textAnchor="middle" fill="#5fe08a" fontSize="10" fontWeight={700}>{t.targetY[lang]}</text>
+              {phase >= 4 && (
+                <text x={336} y={92} textAnchor="middle" fill="#ffb454" fontSize="9" fontWeight={700}>vs</text>
+              )}
             </svg>
             <div className="grid3" style={{ marginTop: 8 }}>
               <div><div className="count-unit">{t.target[lang]}</div><b>{EX.t}</b></div>

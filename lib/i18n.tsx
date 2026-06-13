@@ -108,6 +108,7 @@ export const S = {
     iter: { en: "Iteration", ko: "반복" },
     example: { en: "Example", ko: "예시" },
     target: { en: "Target", ko: "정답" },
+    targetY: { en: "target y", ko: "정답 y" },
     pred: { en: "Prediction ŷ", ko: "예측 ŷ" },
     loss: { en: "Loss", ko: "손실" },
     phase: { en: "Phase", ko: "단계" },
