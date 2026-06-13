@@ -4,6 +4,7 @@ import { LanguageProvider, S, useLang } from "@/lib/i18n";
 import Header from "@/components/Header";
 import NeuralNetBasics from "@/components/NeuralNetBasics";
 import ClassificationTrainer from "@/components/ClassificationTrainer";
+import BackpropSequence from "@/components/BackpropSequence";
 import EmbeddingViz from "@/components/EmbeddingViz";
 import BPETrainer from "@/components/BPETrainer";
 import TokenTaxHero from "@/components/TokenTaxHero";
@@ -32,6 +33,7 @@ export default function Page() {
       <main>
         <NeuralNetBasics />
         <ClassificationTrainer />
+        <BackpropSequence />
         <EmbeddingViz />
         <BPETrainer />
         <TokenTaxHero />
