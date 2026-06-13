@@ -6,6 +6,7 @@ import NeuralNetBasics from "@/components/NeuralNetBasics";
 import ClassificationTrainer from "@/components/ClassificationTrainer";
 import BackpropSequence from "@/components/BackpropSequence";
 import MLMDemo from "@/components/MLMDemo";
+import TokenVocab from "@/components/TokenVocab";
 import TokenEmbedding from "@/components/TokenEmbedding";
 import EmbeddingViz from "@/components/EmbeddingViz";
 import Embed3D from "@/components/Embed3D";
@@ -60,6 +61,7 @@ export default function Page() {
         <MLMDemo />
 
         <GroupHeader g="embeddings" n={4} />
+        <TokenVocab />
         <TokenEmbedding />
         <EmbeddingViz />
         <Embed3D />

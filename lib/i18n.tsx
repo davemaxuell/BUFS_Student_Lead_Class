@@ -197,6 +197,26 @@ export const S = {
     relSelNote: { en: "These are real similarities measured in the full 384-D space. Click another word (or a row) to compare; click the same dot again for the country↔capital view.", ko: "전체 384차원 공간에서 측정한 실제 유사도입니다. 다른 단어(또는 행)를 클릭해 비교하고, 같은 점을 다시 클릭하면 나라↔수도 화면으로 돌아갑니다." },
   },
 
+  embedvocab: {
+    eyebrow: { en: "FROM TEXT TO NUMBERS", ko: "글자에서 숫자로" },
+    title: { en: "Token labeling & the embedding table", ko: "토큰 라벨링과 임베딩 표" },
+    intro: {
+      en: "Before any learning, two setup steps turn tokens into something a network can use. (1) Every distinct token from the corpus is given a number — its label/ID. (2) Each ID points to a row of N numbers — its vector. Those numbers begin random; training (next) makes them meaningful.",
+      ko: "학습이 시작되기 전에, 두 가지 준비 단계가 토큰을 신경망이 쓸 수 있는 형태로 바꿉니다. (1) 말뭉치의 모든 고유 토큰에 번호 — 라벨/ID — 를 부여합니다. (2) 각 ID는 N개의 숫자 행(벡터)을 가리킵니다. 이 숫자들은 무작위로 시작하고, 다음의 학습이 의미를 채웁니다.",
+    },
+    step1: { en: "1 · Label every token (build the vocabulary)", ko: "1 · 모든 토큰에 라벨 붙이기 (어휘집 만들기)" },
+    corpusLabel: { en: "A tiny corpus (sample):", ko: "작은 말뭉치 (예시):" },
+    vocabLabel: { en: "Collect every unique token → give each an ID:", ko: "고유 토큰을 모아 → 각각 ID 부여:" },
+    step1Note: { en: "That number is the token's only “name” to the network — it has no meaning yet.", ko: "이 번호가 신경망에게는 토큰의 유일한 ‘이름’입니다 — 아직 의미는 없습니다." },
+    step2: { en: "2 · Each ID → a row of N numbers (its embedding)", ko: "2 · 각 ID → N개 숫자의 행 (임베딩)" },
+    thId: { en: "id", ko: "ID" },
+    thToken: { en: "token", ko: "토큰" },
+    rowsWord: { en: "tokens total", ko: "개 토큰" },
+    dimNote: { en: "Here we show N = 6 columns and will train N = 2 (so it fits on a flat graph). Real encoders use N = 384, 768, or more dimensions per token.", ko: "여기서는 N = 6열을 보여주고 N = 2로 학습합니다(평면 그래프에 맞추려고). 실제 인코더는 토큰마다 N = 384, 768 또는 그 이상의 차원을 씁니다." },
+    step2Note: { en: "This whole table is just numbers — and every number is a weight the network can adjust.", ko: "이 표 전체가 숫자일 뿐이며, 모든 숫자는 신경망이 조정할 수 있는 가중치입니다." },
+    bridge: { en: "Right now these numbers are random noise. Next, watch training reshape them so tokens that mean similar things end up with similar rows.", ko: "지금 이 숫자들은 무작위 잡음입니다. 다음에서, 학습이 이 숫자들을 바꿔 비슷한 의미의 토큰이 비슷한 행을 갖게 되는 과정을 보세요." },
+  },
+
   emblearn: {
     eyebrow: { en: "HOW A TOKEN GETS ITS VECTOR", ko: "토큰은 어떻게 벡터를 얻나" },
     title: { en: "Learning an embedding from scratch", ko: "임베딩을 처음부터 학습하기" },

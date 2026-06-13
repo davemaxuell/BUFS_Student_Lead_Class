@@ -42,12 +42,7 @@ export default function TokenEmbedding() {
     setPlaying(false);
     const p = model.pairs[pairIdxRef.current % model.pairs.length];
     pairIdxRef.current++;
-    const negs: number[] = [];
-    let guard = 0;
-    while (negs.length < 3 && guard++ < 50) {
-      const n = (Math.random() * model.V) | 0;
-      if (n !== p[0] && n !== p[1] && !negs.includes(n)) negs.push(n);
-    }
+    const negs = model.sampleNegatives(p[0], 3); // true non-neighbors only
     const info = model.trainPair(p[0], p[1], negs, 0.8);
     setFocus({ i: p[0], j: p[1], pPos: info.pPos, negs: info.negs });
     setSel(p[0]);
@@ -161,7 +156,7 @@ export default function TokenEmbedding() {
                     <td style={{ color: "#aab4dd" }}>{model.words[focus.i]} &amp; {model.words[n]}</td>
                     <td style={{ textAlign: "right" }}>0</td>
                     <td style={{ textAlign: "right" }}>{(p * 100).toFixed(0)}%</td>
-                    <td style={{ textAlign: "right", color: "#ffb454" }}>{p.toFixed(2)}</td>
+                    <td style={{ textAlign: "right", color: "#ffb454" }}>{(0 - p).toFixed(2)}</td>
                     <td style={{ textAlign: "right", color: "#ff7a90", fontWeight: 700 }}>↑ {t.push[lang]}</td>
                   </tr>
                 ))}
