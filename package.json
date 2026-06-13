@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "description": "Interactive bilingual (EN/KR) teaching visuals for NLP tokenization, normalization, and the low-resource token tax.",
+  "engines": {
+    "node": "22.x"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
