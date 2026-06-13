@@ -154,6 +154,7 @@ export const S = {
     preset_kr: { en: "Korean example", ko: "한국어 예시" },
     preset_after: { en: "After-context example", ko: "뒤 문맥 예시" },
     tokenized: { en: "Your sentence as tokens (what you learned earlier)", ko: "토큰으로 본 문장 (앞에서 배운 내용)" },
+    tokenizedInline: { en: "↓ how BERT splits your sentence into tokens (updates as you type · [MASK] is its own token)", ko: "↓ BERT가 문장을 토큰으로 나눈 모습 (입력하면 실시간 갱신 · [MASK]도 하나의 토큰)" },
     tokenizedNote: { en: "Before BERT can think, the tokenizer splits your sentence into these pieces — including the [MASK] as its own special token.", ko: "BERT가 생각하기 전에, 토크나이저가 문장을 이 조각들로 나눕니다 — [MASK]도 하나의 특수 토큰입니다." },
     results: { en: "BERT's top guesses", ko: "BERT의 상위 예측" },
     note: {
