@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>NLP Tokenization — Worksheet ANSWER KEY (EN/KR)</title>
+<style>
+  :root { --ink:#1a1a2e; --muted:#555; --line:#cdd3e0; --accent:#2b50d8; --good:#0a7d4d; --soft:#eef2ff; --warn:#b25e00; }
+  * { box-sizing: border-box; }
+  html,body { margin:0; padding:0; color:var(--ink); background:#f4f5fa;
+    font-family:"Segoe UI","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",system-ui,Arial,sans-serif; line-height:1.5; }
+  .sheet { max-width:800px; margin:18px auto; background:#fff; padding:34px 40px; box-shadow:0 2px 18px rgba(0,0,0,.08); }
+  h1 { font-size:1.5rem; margin:0 0 4px; }
+  .tag { display:inline-block; background:var(--good); color:#fff; font-size:.72rem; font-weight:700; padding:2px 8px; border-radius:5px; vertical-align:middle; }
+  h2 { font-size:1.1rem; margin:24px 0 8px; padding-bottom:6px; border-bottom:2px solid var(--accent); color:var(--accent); }
+  .sub { color:var(--muted); font-size:.9rem; margin:0 0 8px; }
+  .q { border:1px solid var(--line); border-radius:8px; padding:12px 14px; margin:10px 0; background:#fcfcff; }
+  .q .num { display:inline-block; background:var(--accent); color:#fff; border-radius:50%; width:22px; height:22px; text-align:center; line-height:22px; font-size:.8rem; font-weight:700; margin-right:6px; }
+  .q b { font-size:.95rem; }
+  .qko { color:#3a3a55; font-size:.85rem; margin:2px 0 8px 28px; }
+  .ans { background:#eafaf1; border-left:3px solid var(--good); padding:8px 12px; border-radius:0 6px 6px 0; margin-top:8px; font-size:.9rem; }
+  .ans b { color:var(--good); }
+  .ans .why { color:#333; display:block; margin-top:4px; }
+  table { width:100%; border-collapse:collapse; font-size:.86rem; margin-top:6px; }
+  th,td { border:1px solid var(--line); padding:6px 9px; text-align:left; }
+  th { background:var(--soft); }
+  code { background:#eef; padding:1px 5px; border-radius:4px; font-size:.85em; }
+  .foot { margin-top:22px; font-size:.74rem; color:var(--muted); text-align:center; }
+  .print-hint { max-width:800px; margin:10px auto 0; text-align:center; }
+  .print-hint button { background:var(--accent); color:#fff; border:none; border-radius:8px; padding:9px 18px; cursor:pointer; }
+  @media print { body{background:#fff;} .sheet{box-shadow:none;margin:0;max-width:none;padding:0 8mm;} .print-hint{display:none;} .q,table{break-inside:avoid;} }
+</style>
+</head>
+<body>
+<div class="print-hint"><button onclick="window.print()">🖨️ Print / 인쇄 (PDF)</button></div>
+<div class="sheet">
+  <h1>🧩 NLP &amp; Tokenization — ANSWER KEY <span class="tag">교사용 / TEACHER</span></h1>
+  <p class="sub">Real token counts from GPT's tokenizer (cl100k_base). Yours may vary slightly by tool/model.<br/>GPT 토크나이저(cl100k_base) 기준 실제 값입니다. 도구·모델에 따라 약간 다를 수 있습니다.</p>
+
+  <h2>② Predict &amp; Vote — Answers / 예측 정답</h2>
+
+  <div class="q">
+    <b><span class="num">1</span>Which uses MORE tokens — English or Korean?</b>
+    <div class="qko">영어와 한국어 중 어느 쪽이 토큰을 더 많이 쓰나요?</div>
+    <div class="ans"><b>Korean / 한국어.</b> e.g. "Artificial intelligence is changing the world." = <b>8 tokens (EN)</b> vs <b>17 tokens (KR)</b> ≈ <b>2.1×</b>.
+      <span class="why">Why / 왜: the tokenizer was trained mostly on English, and Korean is agglutinative (교착어) — particles &amp; endings attach to stems — so Korean words shatter into more, smaller subword pieces (often byte-level). · 토크나이저가 영어를 주로 학습했고, 한국어는 교착어라 조사·어미가 붙어 더 작은 조각으로 잘게 나뉩니다.</span>
+    </div>
+  </div>
+
+  <div class="q">
+    <b><span class="num">2</span>How many pieces will “internationalization” become?</b>
+    <div class="qko">“internationalization”은 몇 조각이 될까요?</div>
+    <div class="ans">
+      <b>Character / 문자: 20</b> &nbsp;|&nbsp; <b>Word / 단어: 1</b> &nbsp;|&nbsp; <b>Subword / 서브워드: 2</b> → <code>international</code> + <code>ization</code>
+      <span class="why">Teaching point / 핵심: subword keeps frequent chunks whole and reuses them, so it stays short without an “unknown” word. · 서브워드는 흔한 덩어리를 통째로 재사용해, 길지 않으면서도 ‘모르는 단어’가 없습니다. (BERT WordPiece may split a bit differently, e.g. <code>international</code> + <code>##ization</code>.)</span>
+    </div>
+  </div>
+
+  <div class="q">
+    <b><span class="num">3</span>Will “한” (one block) equal “한” (ㅎ+ㅏ+ㄴ) to the computer?</b>
+    <div class="qko">“한”(한 글자)과 “한”(ㅎ+ㅏ+ㄴ 분해형)을 컴퓨터는 같다고 볼까요?</div>
+    <div class="ans">
+      Raw compare (===): <b>NO / 아니오</b> (1 code point <code>U+D55C</code> vs 3 code points <code>U+1112 U+1161 U+11AB</code>).<br/>
+      After normalization (NFC): <b>YES / 예</b> — NFC composes them into the same single syllable.
+      <span class="why">Teaching point / 핵심: same look, different bytes → search/login/dedup can silently fail; normalization fixes it. · 같은 모양·다른 바이트 → 검색·로그인·중복제거가 조용히 실패; 정규화가 해결.</span>
+    </div>
+  </div>
+
+  <div class="q">
+    <b><span class="num">4</span>Rank by token cost (1 = cheapest): English, Korean, Chinese, Amharic.</b>
+    <div class="qko">토큰 비용 순(1 = 가장 쌈): 영어, 한국어, 중국어, 암하라어.</div>
+    <div class="ans">
+      <b>1) English (8) &nbsp;→&nbsp; 2) Chinese (12) &nbsp;→&nbsp; 3) Korean (17) &nbsp;→&nbsp; 4) Amharic (72)</b>
+      <span class="why">Same sentence, all measured with GPT's tokenizer. Amharic (low-resource, ~9× English) is the punchline. · 같은 문장을 GPT 토크나이저로 측정. 저자원 언어 암하라어가 영어의 약 9배 — 핵심 메시지.</span>
+    </div>
+  </div>
+
+  <h2>③ Exit Ticket — model answer / 모범 답안</h2>
+  <div class="q">
+    <b>Explain the “token tax” in 2 sentences. / ‘토큰세’를 두 문장으로.</b>
+    <div class="ans">
+      <b>EN:</b> AI models read text as tokens and were trained mostly on English, so the same sentence in a language like Korean or Amharic is cut into many more tokens. More tokens means you pay more, wait longer, and fill the model's memory faster — so speakers of under-resourced languages get a worse, costlier deal for the same task.
+      <span class="why"><b>KR:</b> AI 모델은 글을 토큰으로 읽고 주로 영어로 학습돼서, 같은 문장이라도 한국어·암하라어 같은 언어는 훨씬 많은 토큰으로 쪼개집니다. 토큰이 많으면 비용이 늘고, 느려지고, 모델의 기억(문맥)이 빨리 차므로 — 저자원 언어 사용자는 같은 일을 하고도 더 비싸고 나쁜 대우를 받습니다.</span>
+    </div>
+  </div>
+
+  <div class="foot">Answer key for “Worksheet &amp; Glossary (printable EN-KR)” · Grounded in “NLP with Transformers” (O'Reilly 2022)</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,25 @@
+{
+  "name": "nlp-tokenization-visualizer",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Interactive bilingual (EN/KR) teaching visuals for NLP tokenization, normalization, and the low-resource token tax.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@huggingface/transformers": "^3.8.1",
+    "gpt-tokenizer": "^2.9.0",
+    "next": "15.1.6",
+    "react": "19.0.0",
+    "react-dom": "19.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.17.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "typescript": "^5.7.0"
+  }
+}

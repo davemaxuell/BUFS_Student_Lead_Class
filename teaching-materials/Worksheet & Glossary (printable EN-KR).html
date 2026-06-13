@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>NLP Tokenization — Worksheet & Glossary (EN/KR)</title>
+<style>
+  :root { --ink:#1a1a2e; --muted:#555; --line:#cdd3e0; --accent:#2b50d8; --soft:#eef2ff; }
+  * { box-sizing: border-box; }
+  html,body { margin:0; padding:0; color:var(--ink); background:#f4f5fa;
+    font-family: "Segoe UI","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",system-ui,Arial,sans-serif;
+    line-height:1.5; }
+  .sheet { max-width: 800px; margin: 18px auto; background:#fff; padding: 34px 40px;
+    box-shadow: 0 2px 18px rgba(0,0,0,.08); }
+  h1 { font-size: 1.55rem; margin:0 0 4px; letter-spacing:-.01em; }
+  h2 { font-size: 1.12rem; margin: 26px 0 8px; padding-bottom:6px; border-bottom:2px solid var(--accent); color:var(--accent); }
+  .sub { color:var(--muted); margin:0 0 6px; font-size:.92rem; }
+  .ko { color:#374151; }
+  table { width:100%; border-collapse:collapse; font-size:.86rem; margin-top:6px; }
+  th,td { border:1px solid var(--line); padding:6px 9px; text-align:left; vertical-align:top; }
+  th { background:var(--soft); }
+  td.term { font-weight:700; white-space:nowrap; }
+  td.kterm { white-space:nowrap; }
+  .q { border:1px solid var(--line); border-radius:8px; padding:12px 14px; margin:10px 0; background:#fcfcff; }
+  .q .num { display:inline-block; background:var(--accent); color:#fff; border-radius:50%; width:22px; height:22px;
+    text-align:center; line-height:22px; font-size:.8rem; font-weight:700; margin-right:6px; }
+  .q b { font-size:.96rem; }
+  .qko { color:#3a3a55; font-size:.86rem; margin:2px 0 8px 28px; }
+  .fill { border-bottom:1px dashed #aab; min-height:1.4em; margin:6px 0; }
+  .row2 { display:flex; gap:14px; }
+  .row2 > div { flex:1; }
+  .small { font-size:.8rem; color:var(--muted); }
+  .vote { font-size:.85rem; }
+  .vote span { display:inline-block; border:1px solid var(--line); border-radius:6px; padding:3px 10px; margin:3px 4px 0 0; }
+  .lines { margin-top:6px; }
+  .lines .fill { margin:10px 0; }
+  .tip { background:var(--soft); border-left:3px solid var(--accent); padding:8px 12px; font-size:.84rem; border-radius:0 6px 6px 0; }
+  .foot { margin-top:22px; font-size:.74rem; color:var(--muted); text-align:center; }
+  .print-hint { max-width:800px; margin:10px auto 0; text-align:center; }
+  .print-hint button { background:var(--accent); color:#fff; border:none; border-radius:8px; padding:9px 18px; font-size:.9rem; cursor:pointer; }
+  @media print {
+    body { background:#fff; }
+    .sheet { box-shadow:none; margin:0; max-width:none; padding:0 8mm; }
+    .print-hint { display:none; }
+    h2 { break-after: avoid; }
+    .q, table { break-inside: avoid; }
+    .pagebreak { break-before: page; }
+  }
+</style>
+</head>
+<body>
+
+<div class="print-hint">
+  <button onclick="window.print()">🖨️ Print / 인쇄 (Ctrl/⌘ + P → Save as PDF)</button>
+</div>
+
+<div class="sheet">
+  <h1>🧩 NLP &amp; Tokenization — Worksheet &amp; Glossary</h1>
+  <p class="sub">How machines read text · 기계는 글을 어떻게 읽을까 &nbsp;|&nbsp; Name / 이름: ______________________  Date / 날짜: __________</p>
+
+  <!-- GLOSSARY -->
+  <h2>① Glossary / 용어집</h2>
+  <table>
+    <thead><tr><th>Term</th><th>한국어</th><th>Plain meaning / 쉬운 뜻</th></tr></thead>
+    <tbody>
+      <tr><td class="term">NLP</td><td class="kterm">자연어처리</td><td>Computers working with human language · 컴퓨터가 사람 언어를 다루는 일</td></tr>
+      <tr><td class="term">LLM</td><td class="kterm">거대언어모델</td><td>A huge model that predicts text · 글을 예측하는 거대한 모델</td></tr>
+      <tr><td class="term">Token</td><td class="kterm">토큰</td><td>A chunk the model reads (not always a word) · 모델이 읽는 덩어리(꼭 단어는 아님)</td></tr>
+      <tr><td class="term">Tokenization</td><td class="kterm">토큰화</td><td>Cutting text into tokens · 글을 토큰으로 자르기</td></tr>
+      <tr><td class="term">Vocabulary</td><td class="kterm">어휘집</td><td>The fixed list of tokens a model knows · 모델이 아는 토큰 목록</td></tr>
+      <tr><td class="term">OOV / UNK</td><td class="kterm">미등록 단어</td><td>A word not in the vocabulary · 어휘집에 없는 단어</td></tr>
+      <tr><td class="term">Normalization</td><td class="kterm">정규화</td><td>Standardizing text (case, spacing, Unicode) · 글 표준화(대소문자·공백·유니코드)</td></tr>
+      <tr><td class="term">Subword</td><td class="kterm">서브워드</td><td>Pieces between a letter and a word · 글자와 단어 사이 크기의 조각</td></tr>
+      <tr><td class="term">BPE / WordPiece / SentencePiece</td><td class="kterm">—</td><td>Subword algorithms (GPT / BERT / multilingual) · 서브워드 알고리즘</td></tr>
+      <tr><td class="term">Embedding</td><td class="kterm">임베딩</td><td>Turning a token into numbers · 토큰을 숫자로 바꾸기</td></tr>
+      <tr><td class="term">Morpheme</td><td class="kterm">형태소</td><td>Smallest meaning unit (key for Korean) · 가장 작은 의미 단위(한국어 핵심)</td></tr>
+      <tr><td class="term">Agglutinative</td><td class="kterm">교착어</td><td>Attaches particles/endings to stems (Korean) · 어간에 조사·어미가 붙는 언어</td></tr>
+      <tr><td class="term">Low-resource language</td><td class="kterm">저자원 언어</td><td>A language with little training data · 학습 데이터가 적은 언어</td></tr>
+      <tr><td class="term">Context window</td><td class="kterm">문맥 길이</td><td>Max tokens a model reads at once · 한 번에 읽는 최대 토큰 수</td></tr>
+      <tr><td class="term">Pretraining / Fine-tuning</td><td class="kterm">사전학습 / 미세조정</td><td>Train broadly / adapt to a task · 넓게 학습 / 과제에 맞게 조정</td></tr>
+    </tbody>
+  </table>
+
+  <!-- PREDICT & VOTE -->
+  <h2 class="pagebreak">② Predict &amp; Vote / 예측하고 투표하기</h2>
+  <p class="sub">Write your guess <b>before</b> the demo, then the real answer. · 데모 <b>전에</b> 예측을 적고, 데모 후 실제 답을 적으세요.</p>
+
+  <div class="q">
+    <b><span class="num">1</span>The same sentence in English vs Korean — which uses MORE tokens?</b>
+    <div class="qko">같은 문장을 영어와 한국어로 쓰면 — 어느 쪽이 토큰을 더 많이 쓸까요?</div>
+    <div class="vote">My vote / 내 예측: <span>English / 영어</span> <span>Korean / 한국어</span> <span>About equal / 비슷</span></div>
+    <div class="small lines">Actual / 실제: <div class="fill"></div> Why? / 왜? <div class="fill"></div></div>
+  </div>
+
+  <div class="q">
+    <b><span class="num">2</span>How many pieces will “internationalization” become?</b>
+    <div class="qko">“internationalization” 은 몇 조각이 될까요? (문자 / 단어 / 서브워드)</div>
+    <div class="vote">Character / 문자: <span class="fill" style="display:inline-block;width:60px"></span>
+      Word / 단어: <span class="fill" style="display:inline-block;width:60px"></span>
+      Subword / 서브워드: <span class="fill" style="display:inline-block;width:60px"></span></div>
+  </div>
+
+  <div class="q">
+    <b><span class="num">3</span>Will “한” (typed as one block) equal “한” (typed as ㅎ+ㅏ+ㄴ) to the computer?</b>
+    <div class="qko">“한”(한 글자) 과 “한”(ㅎ+ㅏ+ㄴ 분해형)을 컴퓨터는 같다고 볼까요?</div>
+    <div class="vote">My vote / 내 예측: <span>Equal / 같음</span> <span>Not equal / 다름</span></div>
+    <div class="small lines">After normalization (NFC)? / 정규화(NFC) 후에는? <div class="fill"></div></div>
+  </div>
+
+  <div class="q">
+    <b><span class="num">4</span>Rank these by token cost (1 = cheapest): English, Korean, Chinese, Amharic.</b>
+    <div class="qko">토큰 비용 순으로 매기기 (1 = 가장 쌈): 영어, 한국어, 중국어, 암하라어.</div>
+    <div class="small lines">My ranking / 내 순위: <div class="fill"></div> Actual / 실제: <div class="fill"></div></div>
+  </div>
+
+  <div class="tip">💡 Tool / 도구: open <b>tiktokenizer.vercel.app</b> or the class web app, paste the text, and count. · 텍스트를 붙여넣고 토큰 수를 세어 보세요.</div>
+
+  <!-- EXIT TICKET -->
+  <h2>③ Exit Ticket / 출구 티켓</h2>
+  <div class="q">
+    <b>Explain the “token tax” to a friend in 2 sentences.</b>
+    <div class="qko">친구에게 ‘토큰세(token tax)’를 두 문장으로 설명해 보세요.</div>
+    <div class="lines"><div class="fill"></div><div class="fill"></div></div>
+  </div>
+  <div class="row2">
+    <div class="q">
+      <b>One thing I learned / 배운 것 하나</b>
+      <div class="lines"><div class="fill"></div><div class="fill"></div></div>
+    </div>
+    <div class="q">
+      <b>One thing still fuzzy / 아직 헷갈리는 것</b>
+      <div class="lines"><div class="fill"></div><div class="fill"></div></div>
+    </div>
+  </div>
+
+  <div class="foot">
+    Companion to the interactive web app &amp; the Colab notebook · 인터랙티브 웹앱 · Colab 노트북과 함께 사용<br/>
+    Grounded in “Natural Language Processing with Transformers” (Tunstall, von Werra &amp; Wolf, O'Reilly 2022)
+  </div>
+</div>
+
+</body>
+</html>
