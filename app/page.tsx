@@ -8,6 +8,7 @@ import BackpropSequence from "@/components/BackpropSequence";
 import MLMDemo from "@/components/MLMDemo";
 import TokenVocab from "@/components/TokenVocab";
 import TokenEmbedding from "@/components/TokenEmbedding";
+import SkipGramStep from "@/components/SkipGramStep";
 import EmbeddingViz from "@/components/EmbeddingViz";
 import Embed3D from "@/components/Embed3D";
 import BPETrainer from "@/components/BPETrainer";
@@ -63,6 +64,7 @@ export default function Page() {
         <GroupHeader g="embeddings" n={4} />
         <TokenVocab />
         <TokenEmbedding />
+        <SkipGramStep />
         <EmbeddingViz />
         <Embed3D />
 
