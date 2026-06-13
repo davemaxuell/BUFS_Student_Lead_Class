@@ -1,53 +1,87 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { S, useLang } from "@/lib/i18n";
 import { loadFillMask } from "@/lib/fillMask";
+import { NumberedChip } from "@/lib/chip";
 
 type Status = "idle" | "loading" | "ready" | "error";
 type Pred = { word: string; score: number };
 
-const EX_EN = "The capital of France is [MASK].";
-const EX_KR = "서울은 [MASK]의 수도입니다.";
+// The [MASK] is locked in the middle; students edit only the two sides.
+const PRESETS = [
+  { key: "en", prefix: "The capital of France is", suffix: "." },
+  { key: "kr", prefix: "서울은", suffix: "의 수도입니다." },
+  { key: "after", prefix: "The", suffix: " is barking loudly." },
+] as const;
+
+function buildSentence(prefix: string, suffix: string): string {
+  return (prefix.trim() ? prefix.trimEnd() + " " : "") + "[MASK]" + suffix;
+}
 
 export default function MLMDemo() {
   const { lang } = useLang();
   const t = S.mlm;
-  const [status, setStatus] = useState<Status>("idle");
-  const [text, setText] = useState(EX_EN);
+  const [status, setStatus] = useState<Status>("loading");
+  const [prefix, setPrefix] = useState<string>(PRESETS[0].prefix);
+  const [suffix, setSuffix] = useState<string>(PRESETS[0].suffix);
   const [preds, setPreds] = useState<Pred[]>([]);
+  const [tokens, setTokens] = useState<string[]>([]);
   const [busy, setBusy] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [pipe, setPipe] = useState<any>(null);
+  const pipeRef = useRef<any>(null);
 
-  const runOn = async (p: any, sentence: string) => {
-    if (!p || !sentence.includes("[MASK]")) {
-      setPreds([]);
-      return;
+  const sentence = buildSentence(prefix, suffix);
+
+  // Load the real model as soon as the page starts — no click needed.
+  const load = () => {
+    setStatus("loading");
+    loadFillMask()
+      .then((p) => {
+        pipeRef.current = p;
+        setStatus("ready");
+      })
+      .catch(() => setStatus("error"));
+  };
+  useEffect(() => {
+    load();
+  }, []);
+
+  const run = async (sentenceToRun: string) => {
+    const p = pipeRef.current;
+    if (!p) return;
+    // Tag each token (reusing the tokenization view students already saw).
+    try {
+      setTokens(p.tokenizer.tokenize(sentenceToRun));
+    } catch {
+      setTokens([]);
     }
     setBusy(true);
     try {
-      const out = await p(sentence, { topk: 5 });
-      setPreds(out.map((o: any) => ({ word: o.token_str, score: o.score })));
+      const out = await p(sentenceToRun, { topk: 6 });
+      setPreds(out.map((o: { token_str: string; score: number }) => ({ word: o.token_str, score: o.score })));
     } catch {
       setPreds([]);
     }
     setBusy(false);
   };
 
-  const load = () => {
-    setStatus("loading");
-    loadFillMask()
-      .then((p) => {
-        setPipe(p);
-        setStatus("ready");
-        runOn(p, text);
-      })
-      .catch(() => setStatus("error"));
-  };
+  // Live, debounced: every edit re-runs the model so the percentages move.
+  const runRef = useRef(run);
+  runRef.current = run;
+  useEffect(() => {
+    if (status !== "ready") return;
+    const id = setTimeout(() => runRef.current(sentence), 450);
+    return () => clearTimeout(id);
+  }, [sentence, status]);
 
-  const hasMask = text.includes("[MASK]");
   const maxScore = preds.length ? Math.max(...preds.map((p) => p.score)) : 1;
+
+  const maskChip = (
+    <span className="chip" style={{ background: "#ffb45433", borderColor: "#ffb454", borderStyle: "dashed", color: "#fff", whiteSpace: "nowrap", fontWeight: 700 }}>
+      🔒 [MASK]
+    </span>
+  );
 
   return (
     <section id="mlm">
@@ -56,9 +90,6 @@ export default function MLMDemo() {
         <h2>{t.title[lang]}</h2>
         <p className="lead">{t.intro[lang]}</p>
 
-        {status === "idle" && (
-          <button className="lang-btn" style={{ marginTop: 14 }} onClick={load}>{t.loadBtn[lang]}</button>
-        )}
         {status === "loading" && <p className="lead" style={{ marginTop: 14 }}>⏳ {t.loading[lang]}</p>}
         {status === "error" && (
           <div className="callout" style={{ borderLeftColor: "var(--danger)" }}>
@@ -69,35 +100,73 @@ export default function MLMDemo() {
         {status === "ready" && (
           <>
             <div className="card" style={{ marginTop: 16 }}>
-              <label className="label">{t.inputLabel[lang]}</label>
-              <textarea rows={2} value={text} onChange={(e) => setText(e.target.value)} />
-              <div className="btnrow">
-                <button className="lang-btn" onClick={() => runOn(pipe, text)} disabled={!hasMask || busy}>
-                  {busy ? t.predicting[lang] : t.predict[lang]}
-                </button>
-                {!hasMask && (
-                  <button className="preset" onClick={() => setText((s) => s + " [MASK]")}>{t.insertMask[lang]}</button>
-                )}
-                <button className="preset" onClick={() => { setText(EX_EN); runOn(pipe, EX_EN); }}>{t.presetEn[lang]}</button>
-                <button className="preset" onClick={() => { setText(EX_KR); runOn(pipe, EX_KR); }}>{t.presetKr[lang]}</button>
+              <label className="label">{t.editLabel[lang]}</label>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                <input
+                  type="text"
+                  value={prefix}
+                  placeholder={t.beforePh[lang]}
+                  onChange={(e) => setPrefix(e.target.value)}
+                  style={{ flex: "1 1 220px", minWidth: 140 }}
+                  aria-label={t.beforePh[lang]}
+                />
+                {maskChip}
+                <input
+                  type="text"
+                  value={suffix}
+                  placeholder={t.afterPh[lang]}
+                  onChange={(e) => setSuffix(e.target.value)}
+                  style={{ flex: "1 1 160px", minWidth: 120 }}
+                  aria-label={t.afterPh[lang]}
+                />
               </div>
-              {!hasMask && <div className="note">{t.maskHint[lang]}</div>}
-            </div>
-
-            {preds.length > 0 && (
-              <div className="card" style={{ marginTop: 14 }}>
-                <div className="label">{t.results[lang]}</div>
-                {preds.map((p, i) => (
-                  <div className="bar-row" key={i} style={{ gridTemplateColumns: "120px 1fr 64px" }}>
-                    <div className="bar-label" style={{ fontFamily: "ui-monospace, monospace" }}>{p.word}</div>
-                    <div className="bar-track">
-                      <div className="bar-fill" style={{ width: `${Math.max((p.score / maxScore) * 100, 3)}%` }} />
-                    </div>
-                    <div className="bar-meta">{(p.score * 100).toFixed(1)}%</div>
-                  </div>
+              <div className="note">{t.lockedNote[lang]}</div>
+              <div className="btnrow" style={{ marginTop: 10 }}>
+                {PRESETS.map((p) => (
+                  <button
+                    key={p.key}
+                    className="preset"
+                    onClick={() => { setPrefix(p.prefix); setSuffix(p.suffix); }}
+                    style={prefix === p.prefix && suffix === p.suffix ? { borderColor: "var(--accent)", color: "var(--text)" } : {}}
+                  >
+                    {t[("preset_" + p.key) as "preset_en"][lang]}
+                  </button>
                 ))}
               </div>
+            </div>
+
+            {tokens.length > 0 && (
+              <div className="card" style={{ marginTop: 14 }}>
+                <div className="label">{t.tokenized[lang]}</div>
+                <div className="chips">
+                  {tokens.map((tk, i) =>
+                    tk === "[MASK]" ? (
+                      <span key={i} className="chip numbered" style={{ background: "#ffb45433", borderColor: "#ffb454", borderStyle: "dashed", color: "#fff" }}>
+                        <span className="tok">🔒 [MASK]</span>
+                        <span className="idx">{i + 1}</span>
+                      </span>
+                    ) : (
+                      <NumberedChip key={i} i={i}>{tk}</NumberedChip>
+                    )
+                  )}
+                </div>
+                <div className="note">{t.tokenizedNote[lang]}</div>
+              </div>
             )}
+
+            <div className="card" style={{ marginTop: 14 }}>
+              <div className="label">{t.results[lang]} {busy && <span className="count-unit">· {t.predicting[lang]}</span>}</div>
+              {preds.length === 0 && <div className="count-unit">—</div>}
+              {preds.map((p, i) => (
+                <div className="bar-row" key={i} style={{ gridTemplateColumns: "120px 1fr 64px" }}>
+                  <div className="bar-label" style={{ fontFamily: "ui-monospace, monospace" }}>{p.word}</div>
+                  <div className="bar-track">
+                    <div className="bar-fill" style={{ width: `${Math.max((p.score / maxScore) * 100, 3)}%` }} />
+                  </div>
+                  <div className="bar-meta">{(p.score * 100).toFixed(1)}%</div>
+                </div>
+              ))}
+            </div>
 
             <div className="callout">{t.note[lang]}</div>
           </>
