@@ -22,19 +22,18 @@ export default function TokenEmbedding() {
   const [playing, setPlaying] = useState(false);
   const [sel, setSel] = useState<number>(0); // default: first token ("king")
   const [focus, setFocus] = useState<{ i: number; j: number; pPos: number; negs: { n: number; p: number }[] } | null>(null);
-  const rafRef = useRef(0);
   const seedRef = useRef(2);
   const pairIdxRef = useRef(0);
-
-  const snapshot = () => setCoords(model.vec.map((r) => [...r]));
+  const dispRef = useRef<number[][]>(model.vec.map((r) => [...r])); // smoothed display positions
+  const scaleRef = useRef(0.6);
 
   const runEpochs = (n: number) => {
     setFocus(null);
     let d = dist;
-    for (let i = 0; i < n; i++) d = model.trainEpoch(0.5, 4);
+    for (let i = 0; i < n; i++) d = model.trainEpoch(0.3, 6);
     setEpoch((e) => e + n);
     setDist(d);
-    snapshot();
+    // the render loop eases the dots toward model.vec, so motion stays smooth
   };
 
   // One co-occurring pair, with the pull/push forces drawn out.
@@ -46,31 +45,42 @@ export default function TokenEmbedding() {
     const info = model.trainPair(p[0], p[1], negs, 0.8);
     setFocus({ i: p[0], j: p[1], pPos: info.pPos, negs: info.negs });
     setSel(p[0]);
-    snapshot();
   };
   const runRef = useRef(runEpochs);
   runRef.current = runEpochs;
 
+  // training advances at a watchable pace (~11 epochs/s) when playing
   useEffect(() => {
     if (!playing) return;
-    let stop = false;
-    let last = 0;
-    const tick = (ts: number) => {
-      if (stop) return;
-      // ~1 epoch per 90ms (≈11/s) instead of every frame, so the dots move
-      // slowly enough to actually watch them organize.
-      if (ts - last > 90) {
-        runRef.current(1);
-        last = ts;
-      }
-      rafRef.current = requestAnimationFrame(tick);
-    };
-    rafRef.current = requestAnimationFrame(tick);
-    return () => {
-      stop = true;
-      cancelAnimationFrame(rafRef.current);
-    };
+    const id = setInterval(() => runRef.current(1), 90);
+    return () => clearInterval(id);
   }, [playing]);
+
+  // render loop: the dots GLIDE toward the trained positions every frame, so the
+  // motion looks like smooth, natural settling instead of jumpy snapping.
+  useEffect(() => {
+    let raf = 0;
+    const frame = () => {
+      const v = model.vec;
+      const d = dispRef.current;
+      let moved = false;
+      for (let i = 0; i < v.length; i++) {
+        for (let k = 0; k < 2; k++) {
+          const diff = v[i][k] - d[i][k];
+          if (Math.abs(diff) > 1e-3) {
+            d[i][k] += diff * 0.12;
+            moved = true;
+          } else {
+            d[i][k] = v[i][k];
+          }
+        }
+      }
+      if (moved) setCoords(d.map((r) => [...r]));
+      raf = requestAnimationFrame(frame);
+    };
+    raf = requestAnimationFrame(frame);
+    return () => cancelAnimationFrame(raf);
+  }, [model]);
 
   const reset = () => {
     setPlaying(false);
@@ -78,19 +88,23 @@ export default function TokenEmbedding() {
     pairIdxRef.current = 0;
     seedRef.current += 1;
     model.reset(seedRef.current);
+    dispRef.current = model.vec.map((r) => [...r]);
+    scaleRef.current = 0.6;
+    setCoords(dispRef.current.map((r) => [...r]));
     setEpoch(0);
     setDist(0);
-    snapshot();
   };
 
-  // project to screen, auto-scaled to fit
+  // Monotonic, only-growing scale so the cloud never "breathes"/zooms in and out.
   const pts = useMemo(() => {
-    let maxAbs = 0.001;
-    for (const c of coords) maxAbs = Math.max(maxAbs, Math.abs(c[0]), Math.abs(c[1]));
+    let target = 0.001;
+    for (const c of coords) target = Math.max(target, Math.abs(c[0]), Math.abs(c[1]));
+    scaleRef.current = Math.max(scaleRef.current, target * 1.06);
+    const s = scaleRef.current;
     return coords.map((c, i) => ({
       i,
-      sx: W / 2 + (c[0] / maxAbs) * (W / 2 - 40),
-      sy: H / 2 - (c[1] / maxAbs) * (H / 2 - 30),
+      sx: W / 2 + (c[0] / s) * (W / 2 - 40),
+      sy: H / 2 - (c[1] / s) * (H / 2 - 30),
     }));
   }, [coords]);
 
@@ -98,7 +112,7 @@ export default function TokenEmbedding() {
   const nbSet = new Set(neighbors.map((n) => n.j));
 
   const narration =
-    epoch === 0 ? t.nStart[lang] : epoch < 60 ? t.nLearn[lang] : t.nDone[lang];
+    epoch === 0 ? t.nStart[lang] : epoch < 120 ? t.nLearn[lang] : t.nDone[lang];
 
   const selVec = coords[sel] || [0, 0];
 
