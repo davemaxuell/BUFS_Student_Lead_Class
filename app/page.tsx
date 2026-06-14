@@ -30,6 +30,20 @@ function Footer() {
   );
 }
 
+function DayHeader({ d }: { d: keyof typeof S.days }) {
+  const { lang } = useLang();
+  const day = S.days[d];
+  return (
+    <div className="day-header">
+      <div className="container">
+        <span className="day-tag">{day.tag[lang]}</span>
+        <h2 className="day-title">{day.title[lang]}</h2>
+        <p className="day-sub">{day.sub[lang]}</p>
+      </div>
+    </div>
+  );
+}
+
 function GroupHeader({ g, n }: { g: keyof typeof S.groups; n: number }) {
   const { lang } = useLang();
   const grp = S.groups[g];
@@ -49,6 +63,8 @@ export default function Page() {
     <LanguageProvider>
       <Header />
       <main>
+        <DayHeader d="d1" />
+
         <GroupHeader g="foundations" n={1} />
         <NeuralNetBasics />
         <ClassificationTrainer />

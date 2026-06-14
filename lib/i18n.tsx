@@ -272,6 +272,17 @@ export const S = {
     nDone: { en: "Settled — the loss is low. Tokens with similar meaning now sit together; that grouping IS the learned embedding. The 2-D and 3-D maps below show this with a real model.", ko: "안정됨 — 손실이 낮습니다. 의미가 비슷한 토큰이 모여 있고, 이 군집이 바로 학습된 임베딩입니다. 아래 2D·3D 지도는 실제 모델로 이것을 보여줍니다." },
   },
 
+  days: {
+    d1: {
+      tag: { en: "Day 1", ko: "1일차" },
+      title: { en: "From neurons to tokens", ko: "뉴런에서 토큰까지" },
+      sub: {
+        en: "The full foundation in one day: how a neural network learns, how tokenizers and encoders are trained, how tokens become vectors, and why Korean costs more tokens.",
+        ko: "하루에 담은 전체 기초: 신경망이 학습하는 방법, 토크나이저와 인코더가 훈련되는 과정, 토큰이 벡터가 되는 원리, 그리고 한국어가 토큰을 더 많이 쓰는 이유.",
+      },
+    },
+  },
+
   groups: {
     foundations: {
       title: { en: "Foundations — how a network learns", ko: "기초 — 신경망은 어떻게 학습하나" },

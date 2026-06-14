@@ -62,6 +62,21 @@ a { color: var(--accent); }
 /* Sections ---------------------------------------------------------------- */
 section { padding: 56px 0; border-bottom: 1px solid var(--line); }
 
+/* Top-level day divider that bundles a whole day's groups (Day 1, Day 2…) */
+.day-header {
+  padding: 60px 0 16px;
+  background: linear-gradient(180deg, rgba(88,224,200,0.16), rgba(88,224,200,0));
+  border-top: 4px solid var(--accent2);
+  margin-top: 12px;
+}
+.day-tag {
+  display: inline-block; padding: 5px 14px; border-radius: 999px;
+  background: var(--accent2); color: #0b1020; font-weight: 800;
+  letter-spacing: 0.14em; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 12px;
+}
+.day-title { font-size: clamp(2rem, 5vw, 3.2rem); margin: 0 0 6px; letter-spacing: -0.03em; }
+.day-sub { color: var(--muted); font-size: 1.05rem; margin: 0; max-width: 820px; }
+
 /* Group divider that bundles several sections under one theme (Tokenizer, Encoder…) */
 .group-header {
   padding: 40px 0 8px;
