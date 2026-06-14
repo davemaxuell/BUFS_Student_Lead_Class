@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, ReactNode } from "react";
+import { useEffect, useMemo, useState, ReactNode } from "react";
 import { S, useLang } from "@/lib/i18n";
 import { loadRealTokenizers, RealTok } from "@/lib/realTokenizers";
 import { NumberedChip } from "@/lib/chip";
@@ -28,19 +28,26 @@ type Status = "idle" | "loading" | "ready" | "error";
 export default function RealTokenizers() {
   const { lang } = useLang();
   const r = S.real;
-  const [status, setStatus] = useState<Status>("idle");
+  const [status, setStatus] = useState<Status>("loading");
+  const [progress, setProgress] = useState(0);
   const [toks, setToks] = useState<RealTok[]>([]);
   const [text, setText] = useState("학교에서 자연어를 공부해요. NLP is fun!");
 
   const load = () => {
     setStatus("loading");
-    loadRealTokenizers()
+    setProgress(0);
+    loadRealTokenizers((pct) => setProgress(pct))
       .then((t) => {
         setToks(t);
         setStatus("ready");
       })
       .catch(() => setStatus("error"));
   };
+
+  // Load the real tokenizers automatically as soon as the page starts.
+  useEffect(() => {
+    load();
+  }, []);
 
   const results = useMemo(
     () => toks.map((t) => ({ name: t.name, special: t.special, pieces: t.tokenize(text) })),
@@ -54,13 +61,13 @@ export default function RealTokenizers() {
         <h2>{r.title[lang]}</h2>
         <p className="lead">{r.intro[lang]}</p>
 
-        {status === "idle" && (
-          <button className="lang-btn" style={{ marginTop: 14 }} onClick={load}>
-            {r.loadBtn[lang]}
-          </button>
-        )}
         {status === "loading" && (
-          <p className="lead" style={{ marginTop: 14 }}>{r.loading[lang]}</p>
+          <div style={{ marginTop: 14, maxWidth: 360 }}>
+            <p className="lead" style={{ marginBottom: 6 }}>{r.loading[lang]} {progress > 0 && progress < 100 ? `(${progress}%)` : ""}</p>
+            <div className="bar-track">
+              <div className="bar-fill" style={{ width: `${Math.max(progress, 3)}%`, transition: "width .2s" }} />
+            </div>
+          </div>
         )}
         {status === "error" && (
           <div className="callout" style={{ borderLeftColor: "var(--danger)" }}>
