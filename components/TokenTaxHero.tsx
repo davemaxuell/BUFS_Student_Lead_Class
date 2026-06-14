@@ -3,7 +3,7 @@
 import { useMemo, useRef, useState } from "react";
 import { S, useLang } from "@/lib/i18n";
 import { countTokens, countChars, subwordTokens, showWhitespace } from "@/lib/tokenize";
-import { loadTranslator, translate } from "@/lib/translate";
+import { translate } from "@/lib/translate";
 
 // a distinct color per token, cycled — so the eye can count the pieces at a glance
 const PALETTE = ["#7c9cff", "#5fe08a", "#ffb454", "#ff7a90", "#c792ea", "#58e0c8", "#f78c6c", "#82aaff", "#e0d96a", "#ff6fae"];
@@ -70,23 +70,12 @@ export default function TokenTaxHero() {
   const [en, setEn] = useState(PRESETS[0].en);
   const [ko, setKo] = useState(PRESETS[0].ko);
 
-  // live two-way auto-translation (opt-in: first use downloads the MT model)
-  const [auto, setAuto] = useState(false);
-  const [mStatus, setMStatus] = useState<"idle" | "loading" | "ready" | "error">("idle");
-  const [progress, setProgress] = useState(0);
+  // live two-way auto-translation via a free cloud endpoint (no download)
+  const [auto, setAuto] = useState(true);
   const [busy, setBusy] = useState(false);
-  const readyRef = useRef(false);
+  const [err, setErr] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const reqId = useRef(0);
-
-  const ensureModel = () => {
-    if (readyRef.current || mStatus === "loading") return;
-    setMStatus("loading");
-    setProgress(0);
-    loadTranslator((p) => setProgress(p))
-      .then(() => { readyRef.current = true; setMStatus("ready"); })
-      .catch(() => setMStatus("error"));
-  };
 
   // Note: writing the OTHER box programmatically (setEn/setKo) does not fire its
   // onChange, so there is no translate→translate feedback loop.
@@ -97,28 +86,22 @@ export default function TokenTaxHero() {
       const body = text.trim();
       if (!body) return;
       const myId = ++reqId.current;
+      setErr(false);
+      setBusy(true);
       try {
-        if (!readyRef.current) {
-          setMStatus("loading");
-          await loadTranslator((p) => setProgress(p));
-          readyRef.current = true;
-          setMStatus("ready");
-        }
-        setBusy(true);
         const res = await translate(body, src, tgt);
         if (myId !== reqId.current) return; // a newer keystroke superseded this one
-        if (tgt === "ko") setKo(res); else setEn(res);
+        if (res) { if (tgt === "ko") setKo(res); else setEn(res); }
       } catch {
-        setMStatus("error");
+        if (myId === reqId.current) setErr(true);
       } finally {
         if (myId === reqId.current) setBusy(false);
       }
-    }, 700);
+    }, 600);
   };
 
   const onEn = (v: string) => { setEn(v); schedule(v, "en", "ko"); };
   const onKo = (v: string) => { setKo(v); schedule(v, "ko", "en"); };
-  const toggleAuto = (on: boolean) => { setAuto(on); if (on) ensureModel(); };
 
   const enTok = useMemo(() => countTokens(en), [en]);
   const koTok = useMemo(() => countTokens(ko), [ko]);
@@ -157,19 +140,11 @@ export default function TokenTaxHero() {
 
         <div style={{ marginTop: 14, display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
           <label style={{ display: "inline-flex", alignItems: "center", gap: 7, cursor: "pointer", fontWeight: 600 }}>
-            <input type="checkbox" checked={auto} onChange={(e) => toggleAuto(e.target.checked)} />
+            <input type="checkbox" checked={auto} onChange={(e) => setAuto(e.target.checked)} />
             {S.hero.autoLabel[lang]}
           </label>
-          {busy && mStatus === "ready" && <span className="count-unit" style={{ color: "#58e0c8" }}>{S.hero.translating[lang]}</span>}
-          {mStatus === "loading" && (
-            <span className="count-unit" style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
-              {S.hero.dlModel[lang]} {progress > 0 && progress < 100 ? `(${progress}%)` : ""}
-              <span className="bar-track" style={{ display: "inline-block", width: 120, height: 10, verticalAlign: "middle" }}>
-                <span className="bar-fill" style={{ display: "block", width: `${Math.max(progress, 3)}%`, transition: "width .2s" }} />
-              </span>
-            </span>
-          )}
-          {mStatus === "error" && <span className="count-unit" style={{ color: "var(--danger)" }}>{S.hero.transErr[lang]}</span>}
+          {busy && <span className="count-unit" style={{ color: "#58e0c8" }}>{S.hero.translating[lang]}</span>}
+          {err && <span className="count-unit" style={{ color: "var(--danger)" }}>{S.hero.transErr[lang]}</span>}
         </div>
         <div className="note">{S.hero.autoHint[lang]}</div>
 

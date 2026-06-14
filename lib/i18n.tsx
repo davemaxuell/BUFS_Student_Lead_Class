@@ -352,10 +352,9 @@ export const S = {
     },
     presets: { en: "Try a preset:", ko: "예시 불러오기:" },
     autoLabel: { en: "Auto-translate as I type", ko: "입력하면 자동 번역" },
-    autoHint: { en: "Type in either box and the other fills in. First use downloads a translation model (~300 MB, cached after).", ko: "한쪽에 입력하면 다른 쪽이 자동으로 채워집니다. 처음 사용할 때 번역 모델(~300MB)을 내려받고, 이후에는 캐시됩니다." },
-    dlModel: { en: "Downloading translation model", ko: "번역 모델 다운로드 중" },
+    autoHint: { en: "Type in either box and the other fills in automatically. No download — uses a free online translator, so it needs an internet connection.", ko: "한쪽에 입력하면 다른 쪽이 자동으로 채워집니다. 다운로드 없음 — 무료 온라인 번역기를 사용하므로 인터넷 연결이 필요합니다." },
     translating: { en: "Translating…", ko: "번역 중…" },
-    transErr: { en: "Translation model failed to load. Check your connection and toggle again.", ko: "번역 모델을 불러오지 못했습니다. 연결을 확인하고 다시 켜 보세요." },
+    transErr: { en: "Couldn't reach the translator. Check your connection (or just type both sides yourself).", ko: "번역기에 연결하지 못했습니다. 인터넷 연결을 확인하세요(또는 양쪽을 직접 입력해도 됩니다)." },
   },
 
   tok: {
