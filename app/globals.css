@@ -5,6 +5,7 @@
   --panel2: #1d2750;
   --line: #2a356b;
   --text: #e9edff;
+  --text2: #c6cdf0; /* de-emphasized but still load-bearing text (notes, captions) */
   --muted: #9aa6d6;
   --accent: #7c9cff;
   --accent2: #58e0c8;
@@ -18,15 +19,19 @@
 
 * { box-sizing: border-box; }
 
+/* Larger base so projected text reads from the back of the room (~17px). */
+html { font-size: 17px; scroll-padding-top: 80px; }
+
 html, body {
   margin: 0;
   padding: 0;
   background: radial-gradient(1200px 600px at 70% -10%, #1a2148 0%, var(--bg) 55%) fixed;
   color: var(--text);
-  font-family: ui-sans-serif, system-ui, "Segoe UI", Roboto, "Apple SD Gothic Neo",
-    "Malgun Gothic", "Noto Sans KR", Arial, sans-serif;
-  line-height: 1.55;
+  font-family: var(--font-inter), var(--font-noto-kr), ui-sans-serif, system-ui,
+    "Segoe UI", Roboto, "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", Arial, sans-serif;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 a { color: var(--accent); }
@@ -48,7 +53,7 @@ a { color: var(--accent); }
 .brand span { color: var(--accent2); }
 .nav { display: flex; gap: 4px; flex-wrap: wrap; margin-left: auto; }
 .nav a {
-  color: var(--muted); text-decoration: none; font-size: 0.86rem;
+  color: var(--text2); text-decoration: none; font-size: 0.9rem;
   padding: 6px 10px; border-radius: 8px;
 }
 .nav a:hover { color: var(--text); background: var(--panel2); }
@@ -107,12 +112,17 @@ p.lead { color: var(--muted); font-size: 1.02rem; max-width: 760px; }
 }
 
 /* Inputs ------------------------------------------------------------------ */
-textarea, input[type="text"] {
+textarea, input[type="text"], input[type="number"] {
   width: 100%; background: #0d1430; color: var(--text);
   border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px;
   font-size: 1rem; resize: vertical; font-family: inherit;
 }
-textarea:focus, input:focus { outline: none; border-color: var(--accent); }
+select {
+  background: #0d1430; color: var(--text); border: 1px solid var(--line);
+  border-radius: 8px; padding: 6px 10px; font-family: inherit; font-size: 0.95rem;
+  min-width: 110px; cursor: pointer;
+}
+select:focus, textarea:focus, input:focus { outline: none; border-color: var(--accent); }
 .label { font-weight: 700; font-size: 0.9rem; margin-bottom: 6px; display: block; }
 
 .btnrow { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
@@ -134,7 +144,7 @@ textarea:focus, input:focus { outline: none; border-color: var(--accent); }
 .chip .mark { color: var(--accent2); font-weight: 800; opacity: 0.9; }
 .chip.numbered { display: inline-flex; flex-direction: column; align-items: center; gap: 2px; padding: 4px 8px; }
 .chip.numbered .tok { white-space: pre; line-height: 1.25; }
-.chip .idx { font-family: ui-sans-serif, system-ui, sans-serif; font-size: 0.6rem; opacity: 0.6; line-height: 1; }
+.chip .idx { font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif; font-size: 0.8rem; color: var(--text2); opacity: 1; line-height: 1; }
 .chip.special { background: #161c30; border: 1px dashed var(--muted); }
 .chip.special .tok { font-weight: 800; color: var(--text); }
 .count-big { font-size: 2.4rem; font-weight: 800; line-height: 1; }
@@ -146,7 +156,7 @@ textarea:focus, input:focus { outline: none; border-color: var(--accent); }
 
 .method-count { display: flex; align-items: baseline; gap: 8px; margin: 6px 0 8px; }
 .method-count b { font-size: 1.6rem; }
-.desc { color: var(--muted); font-size: 0.86rem; }
+.desc { color: var(--text2); font-size: 0.95rem; }
 
 /* Ratio banner ------------------------------------------------------------ */
 .ratio {
@@ -155,10 +165,10 @@ textarea:focus, input:focus { outline: none; border-color: var(--accent); }
   border: 1px solid var(--accent); font-size: 1.25rem; font-weight: 700;
 }
 .ratio b { color: var(--accent2); font-size: 1.6rem; }
-.note { color: var(--muted); font-size: 0.84rem; margin-top: 10px; }
+.note { color: var(--text2); font-size: 0.95rem; margin-top: 10px; }
 
 /* Table ------------------------------------------------------------------- */
-table { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 0.9rem; }
+table { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 0.92rem; font-variant-numeric: tabular-nums; }
 th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); }
 th { color: var(--muted); font-weight: 700; }
 td:first-child, th:first-child { font-weight: 700; }
@@ -169,15 +179,15 @@ td:first-child, th:first-child { font-weight: 700; }
 .bar-track { background: #0d1430; border-radius: 8px; height: 26px; overflow: hidden; border: 1px solid var(--line); }
 .bar-fill { height: 100%; border-radius: 8px 0 0 8px; background: linear-gradient(90deg, var(--accent), var(--accent2)); }
 .bar-fill.hot { background: linear-gradient(90deg, var(--warn), var(--danger)); }
-.bar-label { font-size: 0.88rem; }
-.bar-meta { font-size: 0.82rem; color: var(--muted); text-align: right; }
+.bar-label { font-size: 0.92rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bar-meta { font-size: 0.9rem; color: var(--text2); text-align: right; font-variant-numeric: tabular-nums; }
 
 /* Equality pills ---------------------------------------------------------- */
 .pill { display: inline-block; padding: 3px 10px; border-radius: 999px; font-weight: 800; font-size: 0.8rem; }
 .pill.yes { background: rgba(95,224,138,0.16); color: var(--good); border: 1px solid var(--good); }
 .pill.no { background: rgba(255,122,144,0.16); color: var(--danger); border: 1px solid var(--danger); }
 .kv { display: flex; justify-content: space-between; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--line); }
-.mono { font-family: ui-monospace, Consolas, monospace; font-size: 0.85rem; color: var(--muted); word-break: break-all; }
+.mono { font-family: ui-monospace, Consolas, monospace; font-size: 0.95rem; color: var(--text2); word-break: normal; overflow-wrap: break-word; line-height: 1.7; }
 
 .callout {
   margin-top: 14px; padding: 14px 16px; border-left: 3px solid var(--accent2);

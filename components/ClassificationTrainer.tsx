@@ -49,7 +49,7 @@ export default function ClassificationTrainer() {
           ctx.fillRect(i * cell, j * cell, cell + 1, cell + 1);
         } else if (m < MARGIN) {
           // fade the band stronger toward the boundary so the margin reads clearly
-          const a = 0.32 * (1 - m / MARGIN);
+          const a = 0.5 * (1 - m / MARGIN);
           ctx.fillStyle = `rgba(255,255,255,${a.toFixed(3)})`;
           ctx.fillRect(i * cell, j * cell, cell + 1, cell + 1);
         }
@@ -163,7 +163,7 @@ export default function ClassificationTrainer() {
               <span><span style={{ display: "inline-block", width: 10, height: 10, borderRadius: "50%", background: `rgb(${COLA.join(",")})`, marginRight: 5 }} />{t.g1[lang]}</span>
               <span><span style={{ display: "inline-block", width: 10, height: 10, borderRadius: "50%", background: `rgb(${COLB.join(",")})`, marginRight: 5 }} />{t.g2[lang]}</span>
               <span><span style={{ display: "inline-block", width: 14, height: 3, background: "#fff", verticalAlign: "middle", marginRight: 5 }} />{t.boundaryLeg[lang]}</span>
-              <span><span style={{ display: "inline-block", width: 14, height: 10, background: "rgba(255,255,255,0.28)", verticalAlign: "middle", marginRight: 5 }} />{t.marginLeg[lang]}</span>
+              <span><span style={{ display: "inline-block", width: 14, height: 10, background: "rgba(255,255,255,0.5)", border: "1px solid rgba(255,255,255,0.7)", verticalAlign: "middle", marginRight: 5 }} />{t.marginLeg[lang]}</span>
             </div>
           </div>
 

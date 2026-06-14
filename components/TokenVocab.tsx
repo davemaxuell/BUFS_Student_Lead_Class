@@ -88,7 +88,7 @@ export default function TokenVocab() {
                       <td style={{ color: COLORS[group[i]], fontWeight: 700 }}>{i}</td>
                       <td style={{ color: "#e9edff" }}>{w}</td>
                       {matrix[i].map((v, c) => (
-                        <td key={c} style={{ textAlign: "right", color: "#9aa6d6" }}>{v.toFixed(2)}</td>
+                        <td key={c} style={{ textAlign: "right", color: "var(--text)" }}>{v.toFixed(2)}</td>
                       ))}
                       <td style={{ textAlign: "right", color: "var(--muted)" }}>…</td>
                     </tr>

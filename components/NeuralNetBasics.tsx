@@ -128,7 +128,7 @@ export default function NeuralNetBasics() {
 
               {/* inline sigmoid = the activation σ stage, right at the neuron */}
               <rect x={bx} y={by} width={bw} height={bh} rx={8} fill="#0c1228" stroke="#2a386e" />
-              <text x={bx + bw / 2} y={by - 4} textAnchor="middle" fill="#9aa6d6" fontSize="9">σ ({t.sigTitle[lang]})</text>
+              <text x={bx + bw / 2} y={by - 4} textAnchor="middle" fill="#9aa6d6" fontSize="10">σ</text>
               {/* baseline + 0.5 guide */}
               <line x1={zToX(-8)} y1={sToY(0)} x2={zToX(8)} y2={sToY(0)} stroke="#2a386e" strokeWidth={1} />
               <line x1={zToX(0)} y1={by + ipad} x2={zToX(0)} y2={by + bh - ipad} stroke="#2a386e" strokeWidth={1} strokeDasharray="2 3" />

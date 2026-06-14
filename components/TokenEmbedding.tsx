@@ -251,8 +251,8 @@ export default function TokenEmbedding() {
                     <tr key={i} onClick={() => setSel(i)} style={{ cursor: "pointer", background: sel === i ? "#1b2752" : "transparent" }}>
                       <td style={{ width: 14 }}><span style={{ display: "inline-block", width: 9, height: 9, borderRadius: "50%", background: COLORS[model.group[i]] }} /></td>
                       <td style={{ color: "#e9edff" }}>{model.words[i]}</td>
-                      <td style={{ textAlign: "right", color: "#9aa6d6" }}>{c[0].toFixed(2)}</td>
-                      <td style={{ textAlign: "right", color: "#9aa6d6" }}>{c[1].toFixed(2)}</td>
+                      <td style={{ textAlign: "right", color: "var(--text)" }}>{c[0].toFixed(2)}</td>
+                      <td style={{ textAlign: "right", color: "var(--text)" }}>{c[1].toFixed(2)}</td>
                     </tr>
                   ))}
                 </tbody>
