@@ -149,42 +149,6 @@ export default function TokenEmbedding() {
 
         <div className="callout">{narration}</div>
 
-        {focus && (
-          <div className="card" style={{ marginTop: 12 }}>
-            <div className="label">{t.stepTitle[lang]}</div>
-            <div className="note" style={{ marginTop: 0, marginBottom: 8 }}>{t.stepTask[lang]}</div>
-            <table style={{ width: "100%", fontSize: ".88rem", fontVariantNumeric: "tabular-nums" }}>
-              <thead>
-                <tr>
-                  <th>{t.thPair[lang]}</th>
-                  <th style={{ textAlign: "right" }}>{t.thTruth[lang]}</th>
-                  <th style={{ textAlign: "right" }}>{t.thPred[lang]}</th>
-                  <th style={{ textAlign: "right" }}>{t.thErr[lang]}</th>
-                  <th style={{ textAlign: "right" }}>{t.thAction[lang]}</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td style={{ color: "#e9edff" }}>{model.words[focus.i]} &amp; {model.words[focus.j]}</td>
-                  <td style={{ textAlign: "right" }}>1</td>
-                  <td style={{ textAlign: "right" }}>{(focus.pPos * 100).toFixed(0)}%</td>
-                  <td style={{ textAlign: "right", color: "#ffb454" }}>{(1 - focus.pPos).toFixed(2)}</td>
-                  <td style={{ textAlign: "right", color: "#5fe08a", fontWeight: 700 }}>↓ {t.pull[lang]}</td>
-                </tr>
-                {focus.negs.map(({ n, p }) => (
-                  <tr key={n}>
-                    <td style={{ color: "#aab4dd" }}>{model.words[focus.i]} &amp; {model.words[n]}</td>
-                    <td style={{ textAlign: "right" }}>0</td>
-                    <td style={{ textAlign: "right" }}>{(p * 100).toFixed(0)}%</td>
-                    <td style={{ textAlign: "right", color: "#ffb454" }}>{(0 - p).toFixed(2)}</td>
-                    <td style={{ textAlign: "right", color: "#ff7a90", fontWeight: 700 }}>↑ {t.push[lang]}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-
         <div className="grid2" style={{ marginTop: 14, alignItems: "start" }}>
           <div className="card">
             <div className="label">{t.plotTitle[lang]}</div>
@@ -241,9 +205,46 @@ export default function TokenEmbedding() {
             <div className="note">{t.plotNote[lang]}</div>
           </div>
 
-          <div className="card">
-            <div className="label">{t.tableTitle[lang]}</div>
-            <div style={{ maxHeight: 320, overflowY: "auto" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+            {focus && (
+              <div className="card">
+                <div className="label">{t.stepTitle[lang]}</div>
+                <div className="note" style={{ marginTop: 0, marginBottom: 8 }}>{t.stepTask[lang]}</div>
+                <table style={{ width: "100%", fontSize: ".88rem", fontVariantNumeric: "tabular-nums" }}>
+                  <thead>
+                    <tr>
+                      <th>{t.thPair[lang]}</th>
+                      <th style={{ textAlign: "right" }}>{t.thTruth[lang]}</th>
+                      <th style={{ textAlign: "right" }}>{t.thPred[lang]}</th>
+                      <th style={{ textAlign: "right" }}>{t.thErr[lang]}</th>
+                      <th style={{ textAlign: "right" }}>{t.thAction[lang]}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td style={{ color: "#e9edff" }}>{model.words[focus.i]} &amp; {model.words[focus.j]}</td>
+                      <td style={{ textAlign: "right" }}>1</td>
+                      <td style={{ textAlign: "right" }}>{(focus.pPos * 100).toFixed(0)}%</td>
+                      <td style={{ textAlign: "right", color: "#ffb454" }}>{(1 - focus.pPos).toFixed(2)}</td>
+                      <td style={{ textAlign: "right", color: "#5fe08a", fontWeight: 700 }}>↓ {t.pull[lang]}</td>
+                    </tr>
+                    {focus.negs.map(({ n, p }) => (
+                      <tr key={n}>
+                        <td style={{ color: "#aab4dd" }}>{model.words[focus.i]} &amp; {model.words[n]}</td>
+                        <td style={{ textAlign: "right" }}>0</td>
+                        <td style={{ textAlign: "right" }}>{(p * 100).toFixed(0)}%</td>
+                        <td style={{ textAlign: "right", color: "#ffb454" }}>{(0 - p).toFixed(2)}</td>
+                        <td style={{ textAlign: "right", color: "#ff7a90", fontWeight: 700 }}>↑ {t.push[lang]}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            <div className="card">
+              <div className="label">{t.tableTitle[lang]}</div>
+              <div style={{ maxHeight: 320, overflowY: "auto" }}>
               <table style={{ fontFamily: "ui-monospace, monospace", fontSize: ".86rem", fontVariantNumeric: "tabular-nums", width: "100%" }}>
                 <tbody>
                   {coords.map((c, i) => (
@@ -256,6 +257,7 @@ export default function TokenEmbedding() {
                   ))}
                 </tbody>
               </table>
+              </div>
             </div>
           </div>
         </div>

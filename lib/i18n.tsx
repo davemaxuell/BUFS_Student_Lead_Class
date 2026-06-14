@@ -351,6 +351,11 @@ export const S = {
       ko: "토큰이 많다는 것은: 비용 증가(API는 토큰 단위 과금) · 느린 응답 · 모델 기억 공간(문맥)이 빨리 참 을 뜻합니다. 끝까지 보면 그 이유를 정확히 알게 됩니다.",
     },
     presets: { en: "Try a preset:", ko: "예시 불러오기:" },
+    autoLabel: { en: "Auto-translate as I type", ko: "입력하면 자동 번역" },
+    autoHint: { en: "Type in either box and the other fills in. First use downloads a translation model (~300 MB, cached after).", ko: "한쪽에 입력하면 다른 쪽이 자동으로 채워집니다. 처음 사용할 때 번역 모델(~300MB)을 내려받고, 이후에는 캐시됩니다." },
+    dlModel: { en: "Downloading translation model", ko: "번역 모델 다운로드 중" },
+    translating: { en: "Translating…", ko: "번역 중…" },
+    transErr: { en: "Translation model failed to load. Check your connection and toggle again.", ko: "번역 모델을 불러오지 못했습니다. 연결을 확인하고 다시 켜 보세요." },
   },
 
   tok: {
