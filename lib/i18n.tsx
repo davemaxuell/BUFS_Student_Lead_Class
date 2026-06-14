@@ -79,6 +79,8 @@ export const S = {
     acc: { en: "Accuracy", ko: "정확도" },
     g1: { en: "Group 1", ko: "그룹 1" },
     g2: { en: "Group 2", ko: "그룹 2" },
+    boundaryLeg: { en: "decision line", ko: "결정 경계선" },
+    marginLeg: { en: "margin (low-confidence band)", ko: "마진 (낮은 확신 영역)" },
     nStart: { en: "Random start — the boundary is meaningless.", ko: "무작위 시작 — 경계가 아직 의미 없음." },
     nLearn: { en: "Learning… the boundary is bending toward the data.", ko: "학습 중… 경계가 데이터에 맞춰 휘어집니다." },
     nAlmost: { en: "Almost there — most dots are on the right side now.", ko: "거의 다 됨 — 대부분의 점이 올바른 쪽에 있습니다." },

@@ -101,8 +101,14 @@ export class MLP {
     return this.forward(x0, x1).y;
   }
 
-  /** One full-batch gradient-descent epoch with momentum. Returns the binary cross-entropy loss. */
-  trainEpoch(data: Point[], lr = 0.5, momentum = 0.9): number {
+  /**
+   * One full-batch gradient-descent epoch with momentum and (decoupled) weight
+   * decay. The weight decay pulls weights gently toward zero, which keeps the
+   * decision boundary from getting needle-sharp — it settles as a wider-margin
+   * separator (the same regularization idea behind an SVM's max-margin line).
+   * Returns the binary cross-entropy loss.
+   */
+  trainEpoch(data: Point[], lr = 0.5, momentum = 0.9, weightDecay = 0.005): number {
     const H = this.H;
     const gW1 = Array.from({ length: H }, () => [0, 0]);
     const gb1 = new Array<number>(H).fill(0);
@@ -126,13 +132,14 @@ export class MLP {
     }
 
     const s = lr / data.length;
+    const shrink = 1 - lr * weightDecay; // decoupled weight decay (weights only, not biases)
     for (let j = 0; j < H; j++) {
       this.vW2[j] = momentum * this.vW2[j] - s * gW2[j];
-      this.W2[j] += this.vW2[j];
+      this.W2[j] = this.W2[j] * shrink + this.vW2[j];
       this.vW1[j][0] = momentum * this.vW1[j][0] - s * gW1[j][0];
-      this.W1[j][0] += this.vW1[j][0];
+      this.W1[j][0] = this.W1[j][0] * shrink + this.vW1[j][0];
       this.vW1[j][1] = momentum * this.vW1[j][1] - s * gW1[j][1];
-      this.W1[j][1] += this.vW1[j][1];
+      this.W1[j][1] = this.W1[j][1] * shrink + this.vW1[j][1];
       this.vb1[j] = momentum * this.vb1[j] - s * gb1[j];
       this.b1[j] += this.vb1[j];
     }

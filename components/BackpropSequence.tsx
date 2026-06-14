@@ -272,68 +272,70 @@ export default function BackpropSequence() {
             )}
           </div>
 
-          {records.length > 0 && (
-            <div className="card" style={{ gridColumn: "1 / -1" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 6 }}>
-                <h3 style={{ margin: 0, fontSize: ".95rem" }}>{t.records[lang]}</h3>
-                <span className="count-unit">{t.lowest[lang]}: <b style={{ color: "#5fe08a", fontFamily: "ui-monospace, monospace" }}>{minLoss.toFixed(5)}</b></span>
-              </div>
-              <div style={{ maxHeight: 300, overflowY: "auto" }}>
-                <table style={{ fontFamily: "ui-monospace, 'SF Mono', Menlo, monospace", fontSize: ".9rem", fontVariantNumeric: "tabular-nums", width: "100%" }}>
-                  <thead>
-                    <tr>
-                      <th style={{ textAlign: "right" }}>{t.colIter[lang]}</th>
-                      <th style={{ textAlign: "right" }}>{t.colErr[lang]}</th>
-                      <th style={{ textAlign: "right" }}>Δ</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {records.slice().reverse().map((r, i, arr) => {
-                      const prev = arr[i + 1]; // chronologically previous (list is reversed)
-                      const delta = prev ? r.loss - prev.loss : 0;
-                      const isMin = r.loss === minLoss;
-                      return (
-                        <tr key={r.it} style={isMin ? { background: "rgba(95,224,138,0.10)" } : {}}>
-                          <td style={{ textAlign: "right", color: "var(--muted)" }}>{r.it}</td>
-                          <td style={{ textAlign: "right", color: isMin ? "#5fe08a" : "#ffce8a", fontWeight: 600 }}>{r.loss.toFixed(5)}</td>
-                          <td style={{ textAlign: "right", color: delta < 0 ? "#5fe08a" : delta > 0 ? "#ff7a90" : "var(--muted)" }}>
-                            {prev ? (delta <= 0 ? "" : "+") + delta.toFixed(5) : "—"}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+            <div className="card">
+              <table style={{ fontFamily: "ui-monospace, 'SF Mono', Menlo, monospace", fontSize: ".95rem", fontVariantNumeric: "tabular-nums", width: "100%" }}>
+                <thead>
+                  <tr>
+                    <th>{t.colWeight[lang]}</th>
+                    <th style={{ textAlign: "right" }}>{t.colValue[lang]}</th>
+                    <th style={{ textAlign: "right" }}>{t.colGrad[lang]}</th>
+                    <th style={{ textAlign: "right" }}>{t.colNew[lang]}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {rows.map((r) => {
+                    const nv = r.v - LR * r.g;
+                    return (
+                      <tr key={r.l}>
+                        <td>{r.l}</td>
+                        <td style={{ textAlign: "right", color: "#e9edff", fontWeight: 600 }}>{r.v.toFixed(2)}</td>
+                        <td style={{ textAlign: "right", color: phase >= 5 ? "#ffc777" : "var(--muted)", fontWeight: phase >= 5 ? 600 : 400 }}>{phase >= 5 ? r.g.toFixed(3) : "—"}</td>
+                        <td style={{ textAlign: "right", color: phase === 6 ? "#74e89a" : "var(--muted)", fontWeight: phase === 6 ? 700 : 400 }}>
+                          {phase === 6 ? nv.toFixed(2) : "—"}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
             </div>
-          )}
 
-          <div className="card">
-            <table style={{ fontFamily: "ui-monospace, 'SF Mono', Menlo, monospace", fontSize: ".95rem", fontVariantNumeric: "tabular-nums" }}>
-              <thead>
-                <tr>
-                  <th>{t.colWeight[lang]}</th>
-                  <th style={{ textAlign: "right" }}>{t.colValue[lang]}</th>
-                  <th style={{ textAlign: "right" }}>{t.colGrad[lang]}</th>
-                  <th style={{ textAlign: "right" }}>{t.colNew[lang]}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((r) => {
-                  const nv = r.v - LR * r.g;
-                  return (
-                    <tr key={r.l}>
-                      <td>{r.l}</td>
-                      <td style={{ textAlign: "right", color: "#e9edff", fontWeight: 600 }}>{r.v.toFixed(2)}</td>
-                      <td style={{ textAlign: "right", color: phase >= 5 ? "#ffc777" : "var(--muted)", fontWeight: phase >= 5 ? 600 : 400 }}>{phase >= 5 ? r.g.toFixed(3) : "—"}</td>
-                      <td style={{ textAlign: "right", color: phase === 6 ? "#74e89a" : "var(--muted)", fontWeight: phase === 6 ? 700 : 400 }}>
-                        {phase === 6 ? nv.toFixed(2) : "—"}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+            {records.length > 0 && (
+              <div className="card">
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 6 }}>
+                  <h3 style={{ margin: 0, fontSize: ".95rem" }}>{t.records[lang]}</h3>
+                  <span className="count-unit">{t.lowest[lang]}: <b style={{ color: "#5fe08a", fontFamily: "ui-monospace, monospace" }}>{minLoss.toFixed(5)}</b></span>
+                </div>
+                <div style={{ maxHeight: 260, overflowY: "auto" }}>
+                  <table style={{ fontFamily: "ui-monospace, 'SF Mono', Menlo, monospace", fontSize: ".9rem", fontVariantNumeric: "tabular-nums", width: "100%" }}>
+                    <thead>
+                      <tr>
+                        <th style={{ textAlign: "right" }}>{t.colIter[lang]}</th>
+                        <th style={{ textAlign: "right" }}>{t.colErr[lang]}</th>
+                        <th style={{ textAlign: "right" }}>Δ</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {records.slice().reverse().map((r, i, arr) => {
+                        const prev = arr[i + 1]; // chronologically previous (list is reversed)
+                        const delta = prev ? r.loss - prev.loss : 0;
+                        const isMin = r.loss === minLoss;
+                        return (
+                          <tr key={r.it} style={isMin ? { background: "rgba(95,224,138,0.10)" } : {}}>
+                            <td style={{ textAlign: "right", color: "var(--muted)" }}>{r.it}</td>
+                            <td style={{ textAlign: "right", color: isMin ? "#5fe08a" : "#ffce8a", fontWeight: 600 }}>{r.loss.toFixed(5)}</td>
+                            <td style={{ textAlign: "right", color: delta < 0 ? "#5fe08a" : delta > 0 ? "#ff7a90" : "var(--muted)" }}>
+                              {prev ? (delta <= 0 ? "" : "+") + delta.toFixed(5) : "—"}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

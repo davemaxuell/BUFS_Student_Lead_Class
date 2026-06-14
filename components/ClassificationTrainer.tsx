@@ -8,6 +8,8 @@ const COLA = [124, 156, 255]; // group 1 (blue)
 const COLB = [255, 180, 84]; // group 2 (orange)
 const SIZE = 380;
 const GRID = 56;
+const MARGIN = 0.22; // half-width (in probability) of the shaded "margin" band around the boundary
+const LINE = 0.025; // half-width of the decision line itself (p ≈ 0.5)
 
 export default function ClassificationTrainer() {
   const { lang } = useLang();
@@ -40,6 +42,17 @@ export default function ClassificationTrainer() {
         const b = Math.round(COLA[2] * (1 - p) + COLB[2] * p);
         ctx.fillStyle = `rgba(${r},${g},${b},0.45)`;
         ctx.fillRect(i * cell, j * cell, cell + 1, cell + 1);
+        // SVM-style overlay: shade the low-confidence "margin" band, draw the line
+        const m = Math.abs(p - 0.5);
+        if (m < LINE) {
+          ctx.fillStyle = "rgba(255,255,255,0.92)"; // the decision boundary itself
+          ctx.fillRect(i * cell, j * cell, cell + 1, cell + 1);
+        } else if (m < MARGIN) {
+          // fade the band stronger toward the boundary so the margin reads clearly
+          const a = 0.32 * (1 - m / MARGIN);
+          ctx.fillStyle = `rgba(255,255,255,${a.toFixed(3)})`;
+          ctx.fillRect(i * cell, j * cell, cell + 1, cell + 1);
+        }
       }
     }
     for (const pt of dataRef.current) {
@@ -146,9 +159,11 @@ export default function ClassificationTrainer() {
               height={SIZE}
               style={{ width: "100%", maxWidth: SIZE, borderRadius: 10, border: "1px solid var(--line)", display: "block", margin: "0 auto" }}
             />
-            <div style={{ display: "flex", gap: 14, justifyContent: "center", marginTop: 10, fontSize: ".82rem" }}>
+            <div style={{ display: "flex", gap: 14, justifyContent: "center", flexWrap: "wrap", marginTop: 10, fontSize: ".82rem" }}>
               <span><span style={{ display: "inline-block", width: 10, height: 10, borderRadius: "50%", background: `rgb(${COLA.join(",")})`, marginRight: 5 }} />{t.g1[lang]}</span>
               <span><span style={{ display: "inline-block", width: 10, height: 10, borderRadius: "50%", background: `rgb(${COLB.join(",")})`, marginRight: 5 }} />{t.g2[lang]}</span>
+              <span><span style={{ display: "inline-block", width: 14, height: 3, background: "#fff", verticalAlign: "middle", marginRight: 5 }} />{t.boundaryLeg[lang]}</span>
+              <span><span style={{ display: "inline-block", width: 14, height: 10, background: "rgba(255,255,255,0.28)", verticalAlign: "middle", marginRight: 5 }} />{t.marginLeg[lang]}</span>
             </div>
           </div>
 
