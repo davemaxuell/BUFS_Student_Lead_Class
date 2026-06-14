@@ -91,9 +91,16 @@ export default function ClassificationTrainer() {
   useEffect(() => {
     if (!playing) return;
     let stop = false;
-    const tick = () => {
+    // Throttle to one epoch every STEP_MS so the boundary evolves slowly enough
+    // to follow by eye (instead of one epoch per ~16ms animation frame).
+    const STEP_MS = 140;
+    let last = -Infinity;
+    const tick = (now: number) => {
       if (stop) return;
-      runEpochs(1);
+      if (now - last >= STEP_MS) {
+        last = now;
+        runEpochs(1);
+      }
       rafRef.current = requestAnimationFrame(tick);
     };
     rafRef.current = requestAnimationFrame(tick);

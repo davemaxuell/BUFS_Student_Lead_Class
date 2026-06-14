@@ -56,11 +56,13 @@ export default function BackpropSequence() {
   const [playing, setPlaying] = useState(false);
   const [racing, setRacing] = useState(false); // repeat full cycle until least loss
   const [converged, setConverged] = useState(false);
-  const [lossHist, setLossHist] = useState<number[]>([]);
+  const [records, setRecords] = useState<{ it: number; loss: number }[]>([]);
 
   const a = useMemo(() => computeAll(params), [params]);
   const paramsRef = useRef(params);
   paramsRef.current = params;
+  const iterRef = useRef(iter);
+  iterRef.current = iter;
 
   const next = () => {
     if (phase < 6) {
@@ -68,7 +70,7 @@ export default function BackpropSequence() {
       return;
     }
     setParams(applyUpdate(params, a));
-    setLossHist((h) => [...h.slice(-119), a.loss]);
+    setRecords((h) => [...h.slice(-199), { it: iter, loss: a.loss }]);
     setIter(iter + 1);
     setPhase(1);
   };
@@ -90,7 +92,7 @@ export default function BackpropSequence() {
     const id = setInterval(() => {
       const p = paramsRef.current;
       const g = computeAll(p);
-      setLossHist((h) => [...h.slice(-119), g.loss]);
+      setRecords((h) => [...h.slice(-199), { it: iterRef.current, loss: g.loss }]);
       if (g.loss < 5e-4 || Math.abs(prev - g.loss) < 1e-7) {
         setRacing(false);
         setConverged(true);
@@ -120,7 +122,7 @@ export default function BackpropSequence() {
     setPlaying(false);
     setRacing(false);
     setConverged(false);
-    setLossHist([]);
+    setRecords([]);
     setParams(freshParams(true));
     setIter(0);
     setPhase(0);
@@ -169,14 +171,16 @@ export default function BackpropSequence() {
   else if (phase === 2) calcLine = `h₁ = σ( ${f2(params.W1[1][0])}×${EX.x[0]} + ${f2(params.W1[1][1])}×${EX.x[1]} + ${f2(params.b1[1])} ) = σ(${f2(a.z1[1])}) = ${f2(a.a1[1])}`;
   else if (phase === 3) calcLine = `ŷ = σ( ${f2(params.W2[0])}×${f2(a.a1[0])} + ${f2(params.W2[1])}×${f2(a.a1[1])} + ${f2(params.b2)} ) = σ(${f2(a.z2)}) = ${f2(a.yhat)}`;
 
+  const losses = records.map((r) => r.loss);
+  const minLoss = losses.length ? Math.min(...losses) : 0;
   const lossSpark = (() => {
-    if (lossHist.length < 2) return "";
-    const max = Math.max(...lossHist);
-    const min = Math.min(...lossHist);
+    if (records.length < 2) return "";
+    const max = Math.max(...losses);
+    const min = Math.min(...losses);
     const range = max - min || 1;
     const w = 300;
     const h = 46;
-    return lossHist.map((v, i) => `${(i / (lossHist.length - 1)) * w},${(h - 2) - ((v - min) / range) * (h - 4)}`).join(" ");
+    return records.map((r, i) => `${(i / (records.length - 1)) * w},${(h - 2) - ((r.loss - min) / range) * (h - 4)}`).join(" ");
   })();
 
   const rows = [
@@ -258,7 +262,7 @@ export default function BackpropSequence() {
               <div><div className="count-unit">{t.pred[lang]}</div><b>{phase >= 3 || racing || converged ? a.yhat.toFixed(3) : "—"}</b></div>
               <div><div className="count-unit">{t.loss[lang]}</div><b style={{ color: converged ? "#5fe08a" : "#ffb454" }}>{phase >= 4 || racing || converged ? a.loss.toFixed(4) : "—"}</b></div>
             </div>
-            {lossHist.length > 1 && (
+            {records.length > 1 && (
               <div style={{ marginTop: 12 }}>
                 <div className="count-unit" style={{ marginBottom: 2 }}>{t.lossCurve[lang]}</div>
                 <svg viewBox="0 0 300 46" style={{ width: "100%", height: 48 }} preserveAspectRatio="none">
@@ -267,6 +271,42 @@ export default function BackpropSequence() {
               </div>
             )}
           </div>
+
+          {records.length > 0 && (
+            <div className="card" style={{ gridColumn: "1 / -1" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 6 }}>
+                <h3 style={{ margin: 0, fontSize: ".95rem" }}>{t.records[lang]}</h3>
+                <span className="count-unit">{t.lowest[lang]}: <b style={{ color: "#5fe08a", fontFamily: "ui-monospace, monospace" }}>{minLoss.toFixed(5)}</b></span>
+              </div>
+              <div style={{ maxHeight: 300, overflowY: "auto" }}>
+                <table style={{ fontFamily: "ui-monospace, 'SF Mono', Menlo, monospace", fontSize: ".9rem", fontVariantNumeric: "tabular-nums", width: "100%" }}>
+                  <thead>
+                    <tr>
+                      <th style={{ textAlign: "right" }}>{t.colIter[lang]}</th>
+                      <th style={{ textAlign: "right" }}>{t.colErr[lang]}</th>
+                      <th style={{ textAlign: "right" }}>Δ</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {records.slice().reverse().map((r, i, arr) => {
+                      const prev = arr[i + 1]; // chronologically previous (list is reversed)
+                      const delta = prev ? r.loss - prev.loss : 0;
+                      const isMin = r.loss === minLoss;
+                      return (
+                        <tr key={r.it} style={isMin ? { background: "rgba(95,224,138,0.10)" } : {}}>
+                          <td style={{ textAlign: "right", color: "var(--muted)" }}>{r.it}</td>
+                          <td style={{ textAlign: "right", color: isMin ? "#5fe08a" : "#ffce8a", fontWeight: 600 }}>{r.loss.toFixed(5)}</td>
+                          <td style={{ textAlign: "right", color: delta < 0 ? "#5fe08a" : delta > 0 ? "#ff7a90" : "var(--muted)" }}>
+                            {prev ? (delta <= 0 ? "" : "+") + delta.toFixed(5) : "—"}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
 
           <div className="card">
             <table style={{ fontFamily: "ui-monospace, 'SF Mono', Menlo, monospace", fontSize: ".95rem", fontVariantNumeric: "tabular-nums" }}>
