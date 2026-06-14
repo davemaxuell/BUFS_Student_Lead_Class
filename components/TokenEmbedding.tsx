@@ -188,10 +188,21 @@ export default function TokenEmbedding() {
                 const lit = focus ? pulled || pushed : sel === null || active || nb;
                 const col = COLORS[model.group[p.i]];
                 const op = lit ? 1 : focus ? 0.3 : 0.55;
+                const rightSide = p.sx > 300; // flip label inward near the right edge so it isn't clipped
                 return (
                   <g key={p.i} onClick={() => setSel(p.i)} style={{ cursor: "pointer" }} opacity={op}>
                     <circle cx={p.sx} cy={p.sy} r={pulled || pushed || active ? 7 : 5} fill={col} stroke={ring} strokeWidth={ring === "none" ? 0 : 2.4} />
-                    <text x={p.sx + 8} y={p.sy + 4} fontSize={12} fontWeight={lit ? 700 : 500} fill={lit ? "#e9edff" : "#aab4dd"}>
+                    <text
+                      x={rightSide ? p.sx - 8 : p.sx + 8}
+                      y={p.sy + 4}
+                      textAnchor={rightSide ? "end" : "start"}
+                      fontSize={12}
+                      fontWeight={lit ? 700 : 500}
+                      fill={lit ? "#e9edff" : "#c6cdf0"}
+                      stroke="#0d1430"
+                      strokeWidth={3}
+                      style={{ paintOrder: "stroke" }}
+                    >
                       {model.words[p.i]}
                     </text>
                   </g>

@@ -163,8 +163,8 @@ export default function MLMDemo() {
               <div className="label">{t.results[lang]} {busy && <span className="count-unit">· {t.predicting[lang]}</span>}</div>
               {preds.length === 0 && <div className="count-unit">—</div>}
               {preds.map((p, i) => (
-                <div className="bar-row" key={i} style={{ gridTemplateColumns: "120px 1fr 64px" }}>
-                  <div className="bar-label" style={{ fontFamily: "ui-monospace, monospace" }}>{p.word}</div>
+                <div className="bar-row" key={i} style={{ gridTemplateColumns: "minmax(140px,190px) 1fr 64px" }}>
+                  <div className="bar-label" style={{ fontFamily: "ui-monospace, monospace" }} title={p.word}>{p.word}</div>
                   <div className="bar-track">
                     <div className="bar-fill" style={{ width: `${Math.max((p.score / maxScore) * 100, 3)}%` }} />
                   </div>

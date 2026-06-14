@@ -145,7 +145,11 @@ export default function NeuralNetBasics() {
               <text x={410} y={85} textAnchor="middle" fill="#9aa6d6" fontSize="10">{t.output[lang]}</text>
             </svg>
 
-            <div className="callout" style={{ marginTop: "auto", fontFamily: "ui-monospace, monospace", fontSize: ".82rem" }}>
+            <div style={{ display: "flex", gap: 14, flexWrap: "wrap", fontSize: ".82rem", color: "var(--text2)", margin: "6px 0 2px" }}>
+              <span><span style={{ display: "inline-block", width: 16, height: 0, borderTop: "3px solid #7c9cff", verticalAlign: "middle", marginRight: 5 }} />/<span style={{ display: "inline-block", width: 16, height: 0, borderTop: "3px solid #ff7a90", verticalAlign: "middle", margin: "0 5px" }} />{t.edgeLegend[lang]}</span>
+            </div>
+
+            <div className="callout" style={{ marginTop: "auto", fontFamily: "ui-monospace, monospace", fontSize: ".9rem" }}>
               {t.sum[lang]} = ({w1.toFixed(2)})·({x1.toFixed(2)}) + ({w2.toFixed(2)})·({x2.toFixed(2)}) + ({b.toFixed(2)}) = <b>{sum.toFixed(2)}</b>
               <br />
               {t.output[lang]} = σ({sum.toFixed(2)}) = <b style={{ color: "#58e0c8" }}>{out.toFixed(3)}</b>

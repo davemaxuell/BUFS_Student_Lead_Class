@@ -175,12 +175,12 @@ td:first-child, th:first-child { font-weight: 700; }
 .tax-table tr:hover td { background: var(--panel2); }
 
 /* Bars -------------------------------------------------------------------- */
-.bar-row { display: grid; grid-template-columns: 130px 1fr 96px; align-items: center; gap: 12px; margin: 8px 0; }
+.bar-row { display: grid; grid-template-columns: 130px 1fr minmax(96px, max-content); align-items: center; gap: 12px; margin: 8px 0; }
 .bar-track { background: #0d1430; border-radius: 8px; height: 26px; overflow: hidden; border: 1px solid var(--line); }
 .bar-fill { height: 100%; border-radius: 8px 0 0 8px; background: linear-gradient(90deg, var(--accent), var(--accent2)); }
 .bar-fill.hot { background: linear-gradient(90deg, var(--warn), var(--danger)); }
 .bar-label { font-size: 0.92rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.bar-meta { font-size: 0.9rem; color: var(--text2); text-align: right; font-variant-numeric: tabular-nums; }
+.bar-meta { font-size: 0.9rem; color: var(--text2); text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
 
 /* Equality pills ---------------------------------------------------------- */
 .pill { display: inline-block; padding: 3px 10px; border-radius: 999px; font-weight: 800; font-size: 0.8rem; }

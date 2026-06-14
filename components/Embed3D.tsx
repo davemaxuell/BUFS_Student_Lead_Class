@@ -270,10 +270,21 @@ export default function Embed3D() {
                   const nb = nbSet.has(p.i);
                   const fill = active ? "#7c9cff" : nb ? "#58e0c8" : "#9aa6d6";
                   const op = sel === null || active || nb ? 0.55 + dn * 0.45 : 0.25;
+                  const rightSide = p.sx > 320; // flip label inward near the right edge so it isn't clipped
                   return (
                     <g key={p.i} onClick={() => setSel(active ? null : p.i)} style={{ cursor: "pointer" }}>
                       <circle cx={p.sx} cy={p.sy} r={r} fill={fill} opacity={op} />
-                      <text x={p.sx + r + 2} y={p.sy + 3} fontSize={11} fill={active || nb ? "#e9edff" : "#9aa6d6"} opacity={op}>
+                      <text
+                        x={rightSide ? p.sx - r - 2 : p.sx + r + 2}
+                        y={p.sy + 3}
+                        textAnchor={rightSide ? "end" : "start"}
+                        fontSize={11}
+                        fill={active || nb ? "#e9edff" : "#c6cdf0"}
+                        opacity={op}
+                        stroke="#0d1430"
+                        strokeWidth={3}
+                        style={{ paintOrder: "stroke" }}
+                      >
                         {words[p.i]}
                       </text>
                     </g>

@@ -55,6 +55,7 @@ export const S = {
     },
     sweep: { en: "Sweep", ko: "쓸기" },
     sweepStop: { en: "Stop", ko: "정지" },
+    edgeLegend: { en: "Line thickness = weight strength · blue = positive, red = negative", ko: "선 두께 = 가중치 크기 · 파랑 = 양수, 빨강 = 음수" },
   },
 
   train: {
@@ -394,8 +395,8 @@ export const S = {
       ko: "직관적이고 길이가 짧음. 하지만 어휘집이 폭발하고, 새롭거나 드문 단어는 ‘미등록(UNK)’이 됨. 한국어는 특히 가혹: 학교 · 학교에서 · 학교를 가 전부 다른 단어로 보임.",
     },
     subDesc: {
-      en: "The winner used by all modern LLMs: keep common words whole, split rare ones into reusable pieces. Below is GPT-4's actual tokenizer. ‘␣’ marks a space; greyed chips are partial-byte pieces — exactly how Korean often gets shattered.",
-      ko: "모든 최신 LLM이 쓰는 방식: 흔한 단어는 통째로, 드문 단어는 재사용 가능한 조각으로 분할. 아래는 GPT-4의 실제 토크나이저. ‘␣’는 공백, 회색 칩은 부분 바이트 조각 — 한국어가 잘게 부서지는 모습이 바로 이것.",
+      en: "The winner used by all modern LLMs: keep common words whole, split rare ones into reusable pieces. Below is GPT-4's actual tokenizer. ‘␣’ marks a space; the amber chips are partial-byte pieces — exactly how Korean often gets shattered.",
+      ko: "모든 최신 LLM이 쓰는 방식: 흔한 단어는 통째로, 드문 단어는 재사용 가능한 조각으로 분할. 아래는 GPT-4의 실제 토크나이저. ‘␣’는 공백, 주황색(앰버) 칩은 부분 바이트 조각 — 한국어가 잘게 부서지는 모습이 바로 이것.",
     },
     note: {
       en: "Note: BERT uses a subword method called WordPiece (continuations marked with ‘##’), and multilingual models use SentencePiece (spaces marked with ‘▁’). Compare them all in the companion Colab notebook.",
