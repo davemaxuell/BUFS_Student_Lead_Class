@@ -51,12 +51,32 @@ a { color: var(--accent); }
 }
 .brand { font-weight: 800; letter-spacing: -0.02em; font-size: 1.05rem; }
 .brand span { color: var(--accent2); }
-.nav { display: flex; gap: 4px; flex-wrap: wrap; margin-left: auto; }
-.nav a {
-  color: var(--text2); text-decoration: none; font-size: 0.9rem;
-  padding: 6px 10px; border-radius: 8px;
+.nav { display: flex; gap: 8px; flex-wrap: wrap; margin-left: auto; }
+
+/* Collapsed day menu — one button per day; opens a dropdown of its sections. */
+.day-menu { position: relative; }
+.day-menu-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  border: 1px solid var(--line); background: var(--panel2); color: var(--text);
+  border-radius: 999px; padding: 6px 14px; font-weight: 700; font-size: 0.85rem;
+  cursor: pointer;
 }
-.nav a:hover { color: var(--text); background: var(--panel2); }
+.day-menu-btn:hover { border-color: var(--accent); }
+.day-menu-caret { font-size: 0.7rem; transition: transform .2s; line-height: 1; }
+.day-menu-caret.open { transform: rotate(180deg); }
+.day-menu-panel {
+  position: absolute; top: calc(100% + 8px); right: 0; z-index: 60;
+  display: flex; flex-direction: column; min-width: 210px; padding: 6px;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+  animation: dayMenuIn .14s ease both;
+}
+.day-menu-panel a {
+  color: var(--text2); text-decoration: none; font-size: 0.92rem;
+  padding: 9px 12px; border-radius: 8px;
+}
+.day-menu-panel a:hover { color: var(--text); background: var(--panel2); }
+@keyframes dayMenuIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
 .lang-btn {
   border: 1px solid var(--line); background: var(--panel2); color: var(--text);
   border-radius: 999px; padding: 6px 14px; font-weight: 700; cursor: pointer;

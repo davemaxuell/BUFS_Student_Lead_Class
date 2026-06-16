@@ -17,6 +17,11 @@ import RealTokenizers from "@/components/RealTokenizers";
 import NormalizationVisualizer from "@/components/NormalizationVisualizer";
 import LowResourceTax from "@/components/LowResourceTax";
 import Glossary from "@/components/Glossary";
+import AttentionViz from "@/components/AttentionViz";
+import AttentionGame from "@/components/AttentionGame";
+import TransformerBlock from "@/components/TransformerBlock";
+import TransformerBuilder from "@/components/TransformerBuilder";
+import EncoderDecoder from "@/components/EncoderDecoder";
 
 function Footer() {
   const { lang } = useLang();
@@ -91,6 +96,20 @@ export default function Page() {
 
         <GroupHeader g="reference" n={6} />
         <Glossary />
+
+        {/* ===================== DAY 2 (scaffold) ===================== */}
+        <DayHeader d="d2" />
+
+        <GroupHeader g="attention" n={1} />
+        <AttentionViz />
+        <AttentionGame />
+
+        <GroupHeader g="transformer" n={2} />
+        <TransformerBlock />
+        <TransformerBuilder />
+
+        <GroupHeader g="encdec" n={3} />
+        <EncoderDecoder />
       </main>
       <Footer />
     </LanguageProvider>

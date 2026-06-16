@@ -24,6 +24,10 @@ export const S = {
     normalize: { en: "Normalization", ko: "정규화" },
     tax: { en: "Token Tax", ko: "토큰세" },
     glossary: { en: "Glossary", ko: "용어집" },
+    // Day 2
+    attention: { en: "Attention", ko: "어텐션" },
+    transformer: { en: "Transformer block", ko: "트랜스포머 블록" },
+    encdec: { en: "Encoder & decoder", ko: "인코더·디코더" },
   },
   langToggle: { en: "한국어", ko: "English" },
 
@@ -284,6 +288,14 @@ export const S = {
         ko: "하루에 담은 전체 기초: 신경망이 학습하는 방법, 토크나이저와 인코더가 훈련되는 과정, 토큰이 벡터가 되는 원리, 그리고 한국어가 토큰을 더 많이 쓰는 이유.",
       },
     },
+    d2: {
+      tag: { en: "Day 2", ko: "2일차" },
+      title: { en: "Attention & Transformers", ko: "어텐션과 트랜스포머" },
+      sub: {
+        en: "How tokens look at each other: self-attention, the Transformer block, and the split between encoders (reading) and decoders (generating).",
+        ko: "토큰이 서로를 바라보는 방법: 셀프 어텐션, 트랜스포머 블록, 그리고 인코더(읽기)와 디코더(생성)의 구분.",
+      },
+    },
   },
 
   groups: {
@@ -310,6 +322,131 @@ export const S = {
     reference: {
       title: { en: "Reference", ko: "참고 자료" },
       sub: { en: "Vocabulary card for the key terms.", ko: "핵심 용어 카드." },
+    },
+    // Day 2 groups
+    attention: {
+      title: { en: "Attention — tokens look at each other", ko: "어텐션 — 토큰이 서로를 바라보기" },
+      sub: { en: "Each token decides which other tokens to focus on, and by how much.", ko: "각 토큰이 어떤 다른 토큰에 얼마나 집중할지 결정합니다." },
+    },
+    transformer: {
+      title: { en: "The Transformer block", ko: "트랜스포머 블록" },
+      sub: { en: "Attention + a feed-forward network, stacked with residual connections and normalization.", ko: "어텐션 + 피드포워드 신경망을, 잔차 연결과 정규화로 쌓아 올립니다." },
+    },
+    encdec: {
+      title: { en: "Encoder & decoder", ko: "인코더와 디코더" },
+      sub: { en: "Reading (encoder) vs generating (decoder) — and how the two combine for translation.", ko: "읽기(인코더) 대 생성하기(디코더) — 그리고 번역을 위해 둘이 합쳐지는 방법." },
+    },
+  },
+
+  // Day 2 — Attention & Transformers. Visual, interactive explainers.
+  d2: {
+    attention: {
+      eyebrow: { en: "ATTENTION", ko: "어텐션" },
+      title: { en: "Self-attention — which tokens matter?", ko: "셀프 어텐션 — 어떤 토큰이 중요한가?" },
+      desc: {
+        en: "Each token builds a query and compares it against every other token's key. The softmax of those scores decides how much of each token's value to mix in — so a word can “look at” the words it depends on.",
+        ko: "각 토큰은 쿼리(query)를 만들어 다른 모든 토큰의 키(key)와 비교합니다. 그 점수들의 소프트맥스가 각 토큰의 값(value)을 얼마나 섞을지 정합니다 — 그래서 한 단어가 의존하는 단어들을 “바라볼” 수 있습니다.",
+      },
+      pickHint: { en: "Click a word to see where it looks", ko: "단어를 클릭하면 어디를 보는지 표시됩니다" },
+      lookingFrom: { en: "Looking from", ko: "기준 단어" },
+      attendsTo: { en: "pays most attention to", ko: "가장 주목하는 단어" },
+      barCaption: { en: "Attention weights from the chosen word (they add up to 100%)", ko: "선택한 단어의 어텐션 가중치 (합계 100%)" },
+      matrixCaption: { en: "Full attention grid — row = from, column = to, darker = more attention", ko: "전체 어텐션 격자 — 행 = 기준, 열 = 대상, 진할수록 더 주목" },
+      formula: { en: "score = (query · key) ÷ √d   →   softmax → weights → weighted sum of values", ko: "점수 = (쿼리 · 키) ÷ √d   →   소프트맥스 → 가중치 → 값의 가중합" },
+      takeaway: {
+        en: "No fixed window: every token can reach any other token in one step. That is the whole trick behind Transformers.",
+        ko: "고정된 창(window)이 없습니다: 모든 토큰이 한 번에 다른 어떤 토큰에도 닿을 수 있습니다. 이것이 트랜스포머의 핵심 비결입니다.",
+      },
+    },
+    game: {
+      eyebrow: { en: "TRY IT YOURSELF", ko: "직접 해보기" },
+      title: { en: "Guess where the word looks", ko: "단어가 어디를 보는지 맞혀보세요" },
+      intro: {
+        en: "The highlighted word is ambiguous. A person uses the rest of the sentence to figure out what it means — and so does attention. Which word do you think it points to?",
+        ko: "강조된 단어는 모호합니다. 사람은 문장의 나머지를 보고 그 뜻을 알아냅니다 — 어텐션도 똑같이 합니다. 어떤 단어를 가리킨다고 생각하나요?",
+      },
+      prompt: { en: "What does “{w}” point to?", ko: "“{w}”가 가리키는 것은?" },
+      correct: { en: "Correct!", ko: "정답!" },
+      wrong: { en: "Not quite.", ko: "아쉬워요." },
+      reveal: { en: "Attention connects them:", ko: "어텐션이 둘을 연결합니다:" },
+      next: { en: "Next sentence →", ko: "다음 문장 →" },
+      again: { en: "Start over", ko: "다시 시작" },
+      score: { en: "Score", ko: "점수" },
+      done: { en: "All done! You read the context just like attention does.", ko: "모두 끝! 어텐션처럼 문맥을 읽어냈어요." },
+      tieIn: {
+        en: "This is exactly what attention learns to do — connect a word to the other words that explain it, anywhere in the sentence.",
+        ko: "이것이 바로 어텐션이 학습하는 일입니다 — 한 단어를, 문장 어디에 있든 그것을 설명하는 다른 단어와 연결하는 것.",
+      },
+    },
+    transformer: {
+      eyebrow: { en: "TRANSFORMER BLOCK", ko: "트랜스포머 블록" },
+      title: { en: "Putting a Transformer layer together", ko: "트랜스포머 한 층 조립하기" },
+      desc: {
+        en: "One block = multi-head attention → add & normalize → feed-forward network → add & normalize. Stack a few dozen of these and you have GPT or BERT.",
+        ko: "한 블록 = 멀티헤드 어텐션 → 잔차 연결·정규화 → 피드포워드 신경망 → 잔차 연결·정규화. 이걸 수십 개 쌓으면 GPT나 BERT가 됩니다.",
+      },
+      inputs: { en: "Token + position embeddings", ko: "토큰 + 위치 임베딩" },
+      mha: { en: "Multi-head attention", ko: "멀티헤드 어텐션" },
+      mhaNote: { en: "tokens look at each other", ko: "토큰이 서로를 바라봄" },
+      addnorm: { en: "Add & normalize", ko: "잔차 연결 & 정규화" },
+      ffn: { en: "Feed-forward network", ko: "피드포워드 신경망" },
+      ffnNote: { en: "think about each token on its own", ko: "각 토큰을 따로 처리" },
+      output: { en: "Output (to the next block)", ko: "출력 (다음 블록으로)" },
+      residual: { en: "residual / skip connection", ko: "잔차 / 스킵 연결" },
+      stack: { en: "This same block is stacked ×N (GPT-2: 12, GPT-3: 96).", ko: "같은 블록을 ×N개 쌓습니다 (GPT-2: 12개, GPT-3: 96개)." },
+      legendAttn: { en: "mixes tokens together", ko: "토큰을 섞음" },
+      legendFfn: { en: "processes tokens separately", ko: "토큰을 따로 처리" },
+    },
+    builder: {
+      eyebrow: { en: "BUILD IT YOURSELF", ko: "직접 만들기" },
+      title: { en: "Build a Transformer block", ko: "트랜스포머 블록을 직접 쌓아보세요" },
+      intro: {
+        en: "You've seen the finished block — now assemble one yourself. Click the four pieces in the right order, bottom to top. Data flows up from the input embeddings to the output.",
+        ko: "완성된 블록을 봤으니, 이제 직접 만들어 보세요. 네 조각을 아래에서 위로 올바른 순서로 클릭하세요. 데이터는 입력 임베딩에서 출력으로 위로 흐릅니다.",
+      },
+      palette: { en: "Pieces — click to stack", ko: "조각 — 클릭해서 쌓기" },
+      placedTitle: { en: "Your block", ko: "내가 만든 블록" },
+      inputFixed: { en: "Token + position embeddings (input)", ko: "토큰 + 위치 임베딩 (입력)" },
+      outputTarget: { en: "Output → next block", ko: "출력 → 다음 블록" },
+      goalSlot: { en: "stack your 4 pieces here", ko: "여기에 조각 4개를 쌓으세요" },
+      progress: { en: "pieces placed", ko: "개 배치됨" },
+      removeHint: { en: "Click a stacked piece to take it back.", ko: "쌓은 조각을 클릭하면 다시 가져옵니다." },
+      reset: { en: "Clear", ko: "비우기" },
+      success: { en: "That's a real Transformer block! 🎉", ko: "진짜 트랜스포머 블록 완성! 🎉" },
+      successWhy: {
+        en: "Attention lets the tokens share information, the feed-forward layer then thinks about each token on its own, and each step is wrapped in “add & normalize” so training stays stable. Stack 12–96 of these and you have GPT or BERT.",
+        ko: "어텐션으로 토큰들이 정보를 주고받고, 피드포워드 층이 각 토큰을 따로 처리합니다. 각 단계는 “잔차 연결·정규화”로 감싸 학습이 안정됩니다. 이걸 12~96개 쌓으면 GPT나 BERT가 됩니다.",
+      },
+      wrong: {
+        en: "Not quite. The rule: attention first, then the feed-forward network — and each one is immediately followed by “add & normalize”.",
+        ko: "아쉬워요. 규칙은: 먼저 어텐션, 그다음 피드포워드 신경망 — 그리고 각각 바로 뒤에 “잔차 연결·정규화”가 옵니다.",
+      },
+      tryAgain: { en: "Clear & try again", ko: "비우고 다시 하기" },
+    },
+    encdec: {
+      eyebrow: { en: "ENCODER & DECODER", ko: "인코더와 디코더" },
+      title: { en: "Reading vs generating", ko: "읽기 대 생성하기" },
+      desc: {
+        en: "Same attention machinery, one difference: what each token is allowed to look at. Green means “can look”.",
+        ko: "같은 어텐션 장치, 단 하나의 차이: 각 토큰이 무엇을 볼 수 있는가입니다. 초록색은 “볼 수 있음”을 뜻합니다.",
+      },
+      encoderName: { en: "Encoder — reads", ko: "인코더 — 읽기" },
+      decoderName: { en: "Decoder — generates", ko: "디코더 — 생성" },
+      encoderNote: {
+        en: "Every token sees every other token — full context, both directions. This is BERT.",
+        ko: "모든 토큰이 다른 모든 토큰을 봅니다 — 양방향 완전한 문맥. 이것이 BERT입니다.",
+      },
+      decoderNote: {
+        en: "Each token sees only itself and the words before it — it can't peek at the future. This is GPT.",
+        ko: "각 토큰은 자신과 앞쪽 단어만 봅니다 — 미래를 미리 볼 수 없습니다. 이것이 GPT입니다.",
+      },
+      maskCaption: { en: "Row = the token doing the looking · column = the token being looked at", ko: "행 = 바라보는 토큰 · 열 = 바라보이는 토큰" },
+      rowFrom: { en: "from", ko: "기준" },
+      colTo: { en: "to →", ko: "대상 →" },
+      combined: {
+        en: "Translation uses both: an encoder reads the whole source sentence, then a decoder writes the translation one word at a time.",
+        ko: "번역은 둘 다 사용합니다: 인코더가 원문 전체를 읽고, 디코더가 번역문을 한 단어씩 씁니다.",
+      },
     },
   },
 
